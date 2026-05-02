@@ -8,10 +8,10 @@ Implementation tasks for the Academic Management System feature, derived from th
 
 ### Phase 1: Database & Schema
 
-- [ ] 1.1 Create `packages/db/src/schema/ams.ts` with all AMS tables (academicProfile, semester, subject, score)
-- [ ] 1.2 Export AMS schema in `packages/db/src/schema/index.ts`
+- [x] 1.1 Create `packages/db/src/schema/ams.ts` with all AMS tables (academicProfile, semester, subject, score)
+- [x] 1.2 Export AMS schema in `packages/db/src/schema/index.ts`
 - [ ] 1.3 Run database migrations to create tables
-- [ ] 1.4 Add AMS relations to user in auth schema (optional, for queries)
+- [x] 1.4 Add AMS relations to user in auth schema (optional, for queries)
 
 ### Phase 2: API Layer
 
