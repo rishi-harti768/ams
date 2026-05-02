@@ -55,10 +55,10 @@ Implementation tasks for the Academic Management System feature, derived from th
 
 ### Phase 7: Validation & Polish
 
-- [ ] 7.1 Add Zod validation schemas to all API inputs
-- [ ] 7.2 Add error handling and user-friendly error messages
-- [ ] 7.3 Run biome formatting on all new files
-- [ ] 7.4 Verify all acceptance criteria are met
+- [x] 7.1 Add Zod validation schemas to all API inputs
+- [x] 7.2 Add error handling and user-friendly error messages
+- [x] 7.3 Run biome formatting on all new files
+- [x] 7.4 Verify all acceptance criteria are met
 
 ## Notes
 
