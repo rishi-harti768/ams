@@ -21,6 +21,11 @@
     ],
     "paths": {
       "@/*": ["./src/*"],
+      "@ams/ams": ["../../packages/ams/src/index.ts"],
+      "@ams/api": ["../../packages/api/src/index.ts"],
+      "@ams/auth": ["../../packages/auth/src/index.ts"],
+      "@ams/db": ["../../packages/db/src/index.ts"],
+      "@ams/env/*": ["../../packages/env/src/*"],
       "@ams/ui/*": ["../../packages/ui/src/*"]
     }
   },
