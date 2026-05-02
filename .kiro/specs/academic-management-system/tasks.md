@@ -47,7 +47,7 @@ Implementation tasks for the Academic Management System feature, derived from th
 
 ### Phase 6: Frontend - Pages
 
-- [ ] 6.1 Create Dashboard page at `app/dashboard/page.tsx`
+- [x] 6.1 Create Dashboard page at `app/dashboard/page.tsx`
 - [ ] 6.2 Create Semester List page at `app/semesters/page.tsx`
 - [ ] 6.3 Create Semester Detail page at `app/semesters/[id]/page.tsx`
 - [ ] 6.4 Create Profile/Settings page at `app/settings/page.tsx`
