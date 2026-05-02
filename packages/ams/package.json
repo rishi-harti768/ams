@@ -1,0 +1,16 @@
+{
+  "name": "@ams/ams",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    }
+  },
+  "dependencies": {
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@ams/config": "workspace:*",
+    "typescript": "catalog:"
+  }
+}

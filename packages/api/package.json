@@ -13,6 +13,7 @@
   "dependencies": {
     "@ams/auth": "workspace:*",
     "@ams/db": "workspace:*",
+    "@ams/ams": "workspace:*",
     "@ams/env": "workspace:*",
     "@orpc/client": "catalog:",
     "@orpc/openapi": "catalog:",

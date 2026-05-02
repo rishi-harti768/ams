@@ -10,24 +10,24 @@ Implementation tasks for the Academic Management System feature, derived from th
 
 - [x] 1.1 Create `packages/db/src/schema/ams.ts` with all AMS tables (academicProfile, semester, subject, score)
 - [x] 1.2 Export AMS schema in `packages/db/src/schema/index.ts`
-- [ ] 1.3 Run database migrations to create tables
+- [x] 1.3 Run database migrations to create tables
 - [x] 1.4 Add AMS relations to user in auth schema (optional, for queries)
 
 ### Phase 2: API Layer
 
-- [ ] 2.1 Create profile router in `packages/api/src/routers/profile.ts`
-- [ ] 2.2 Create semester router in `packages/api/src/routers/semester.ts`
-- [ ] 2.3 Create subject router in `packages/api/src/routers/subject.ts`
-- [ ] 2.4 Create score router in `packages/api/src/routers/score.ts`
-- [ ] 2.5 Create cgpa router in `packages/api/src/routers/cgpa.ts`
-- [ ] 2.6 Register all routers in `packages/api/src/routers/index.ts`
+- [x] 2.1 Create profile router in `packages/api/src/routers/profile.ts`
+- [x] 2.2 Create semester router in `packages/api/src/routers/semester.ts`
+- [x] 2.3 Create subject router in `packages/api/src/routers/subject.ts`
+- [x] 2.4 Create score router in `packages/api/src/routers/score.ts`
+- [x] 2.5 Create cgpa router in `packages/api/src/routers/cgpa.ts`
+- [x] 2.6 Register all routers in `packages/api/src/routers/index.ts`
 
 ### Phase 3: CGPA Calculation Utilities
 
-- [ ] 3.1 Create `packages/ams/src/calculations.ts` with grade point function
-- [ ] 3.2 Create calculation functions for semester and cumulative CGPA
-- [ ] 3.3 Create score projection utilities
-- [ ] 3.4 Export types and functions from `packages/ams/src/index.ts`
+- [x] 3.1 Create `packages/ams/src/calculations.ts` with grade point function
+- [x] 3.2 Create calculation functions for semester and cumulative CGPA
+- [x] 3.3 Create score projection utilities
+- [x] 3.4 Export types and functions from `packages/ams/src/index.ts`
 
 ### Phase 4: Frontend - Core Components
 

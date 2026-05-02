@@ -2,6 +2,16 @@ import { env } from "@ams/env/server";
 import { drizzle } from "drizzle-orm/node-postgres";
 
 import {
+	academicProfile,
+	academicProfileRelations,
+	score,
+	scoreRelations,
+	semester,
+	semesterRelations,
+	subject,
+	subjectRelations,
+} from "./schema/ams";
+import {
 	account,
 	accountRelations,
 	session,
@@ -14,13 +24,21 @@ import {
 export function createDb() {
 	return drizzle(env.DATABASE_URL, {
 		schema: {
-			user,
-			session,
+			academicProfile,
+			academicProfileRelations,
+			score,
+			scoreRelations,
+			semester,
+			semesterRelations,
+			subject,
+			subjectRelations,
 			account,
-			verification,
-			userRelations,
-			sessionRelations,
 			accountRelations,
+			session,
+			sessionRelations,
+			user,
+			userRelations,
+			verification,
 		},
 	});
 }
