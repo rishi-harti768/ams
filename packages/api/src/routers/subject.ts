@@ -18,8 +18,7 @@ export const subjectRouter = {
 			});
 
 			if (!sem) {
-				throw new ORPCError({
-					code: "FORBIDDEN",
+				throw new ORPCError("FORBIDDEN", {
 					message: "Semester not found or access denied",
 				});
 			}
@@ -53,8 +52,7 @@ export const subjectRouter = {
 			});
 
 			if (!sem) {
-				throw new ORPCError({
-					code: "FORBIDDEN",
+				throw new ORPCError("FORBIDDEN", {
 					message: "Semester not found or access denied",
 				});
 			}
@@ -100,8 +98,7 @@ export const subjectRouter = {
 			});
 
 			if (!item || item.semester.userId !== context.session.user.id) {
-				throw new ORPCError({
-					code: "FORBIDDEN",
+				throw new ORPCError("FORBIDDEN", {
 					message: "Subject not found or access denied",
 				});
 			}
@@ -134,8 +131,7 @@ export const subjectRouter = {
 			});
 
 			if (!item || item.semester.userId !== context.session.user.id) {
-				throw new ORPCError({
-					code: "FORBIDDEN",
+				throw new ORPCError("FORBIDDEN", {
 					message: "Subject not found or access denied",
 				});
 			}

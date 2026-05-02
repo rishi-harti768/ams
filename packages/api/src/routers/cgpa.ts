@@ -95,8 +95,7 @@ export const cgpaRouter = {
 			});
 
 			if (!sem) {
-				throw new ORPCError({
-					code: "NOT_FOUND",
+				throw new ORPCError("NOT_FOUND", {
 					message: "Semester not found",
 				});
 			}
@@ -171,8 +170,7 @@ export const cgpaRouter = {
 			});
 
 			if (!sem?.targetCGPA) {
-				throw new ORPCError({
-					code: "BAD_REQUEST",
+				throw new ORPCError("BAD_REQUEST", {
 					message: "Semester not found or no target CGPA set",
 				});
 			}

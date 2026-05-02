@@ -31,19 +31,19 @@ Implementation tasks for the Academic Management System feature, derived from th
 
 ### Phase 4: Frontend - Core Components
 
-- [ ] 4.1 Create `CGPACard` component in `packages/ui/src/components/cgpa-card.tsx`
-- [ ] 4.2 Create `CGPAChart` component in `packages/ui/src/components/cgpa-chart.tsx`
-- [ ] 4.3 Create `ScoreInput` component in `packages/ui/src/components/score-input.tsx`
-- [ ] 4.4 Create `SubjectForm` component in `packages/ui/src/components/subject-form.tsx`
-- [ ] 4.5 Create `TargetForm` component in `packages/ui/src/components/target-form.tsx`
+- [x] 4.1 Create `CGPACard` component in `packages/ui/src/components/cgpa-card.tsx`
+- [x] 4.2 Create `CGPAChart` component in `packages/ui/src/components/cgpa-chart.tsx`
+- [x] 4.3 Create `ScoreInput` component in `packages/ui/src/components/score-input.tsx`
+- [x] 4.4 Create `SubjectForm` component in `packages/ui/src/components/subject-form.tsx`
+- [x] 4.5 Create `TargetForm` component in `packages/ui/src/components/target-form.tsx`
 
 ### Phase 5: Frontend - API Hooks
 
-- [ ] 5.1 Create React Query hooks for profile operations
-- [ ] 5.2 Create React Query hooks for semester operations
-- [ ] 5.3 Create React Query hooks for subject operations
-- [ ] 5.4 Create React Query hooks for score operations
-- [ ] 5.5 Create React Query hooks for CGPA/dashboard operations
+- [x] 5.1 Create React Query hooks for profile operations
+- [x] 5.2 Create React Query hooks for semester operations
+- [x] 5.3 Create React Query hooks for subject operations
+- [x] 5.4 Create React Query hooks for score operations
+- [x] 5.5 Create React Query hooks for CGPA/dashboard operations
 
 ### Phase 6: Frontend - Pages
 

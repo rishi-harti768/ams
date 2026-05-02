@@ -21,6 +21,8 @@
       "@orpc/openapi": "^1.13.14",
       "@orpc/zod": "^1.13.14",
       "better-auth": "1.5.5",
+      "drizzle-orm": "^0.45.1",
+      "pg": "^8.17.1",
       "@types/react": "^19.2.10",
       "@types/react-dom": "^19.2.3",
       "tailwindcss": "^4.1.18"

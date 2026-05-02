@@ -60,8 +60,7 @@ export const scoreRouter = {
 			});
 
 			if (!item || item.subject.semester.userId !== context.session.user.id) {
-				throw new ORPCError({
-					code: "FORBIDDEN",
+				throw new ORPCError("FORBIDDEN", {
 					message: "Score not found or access denied",
 				});
 			}
@@ -86,8 +85,7 @@ export const scoreRouter = {
 			});
 
 			if (!sub || sub.semester.userId !== context.session.user.id) {
-				throw new ORPCError({
-					code: "FORBIDDEN",
+				throw new ORPCError("FORBIDDEN", {
 					message: "Subject not found or access denied",
 				});
 			}
@@ -96,8 +94,7 @@ export const scoreRouter = {
 				input.internalMarks !== null &&
 				input.internalMarks > sub.maxInternalMarks
 			) {
-				throw new ORPCError({
-					code: "BAD_REQUEST",
+				throw new ORPCError("BAD_REQUEST", {
 					message: `Internal marks cannot exceed ${sub.maxInternalMarks}`,
 				});
 			}
@@ -146,8 +143,7 @@ export const scoreRouter = {
 			});
 
 			if (!sub || sub.semester.userId !== context.session.user.id) {
-				throw new ORPCError({
-					code: "FORBIDDEN",
+				throw new ORPCError("FORBIDDEN", {
 					message: "Subject not found or access denied",
 				});
 			}
@@ -156,8 +152,7 @@ export const scoreRouter = {
 				input.endsemMarks !== null &&
 				input.endsemMarks > sub.maxEndsemMarks
 			) {
-				throw new ORPCError({
-					code: "BAD_REQUEST",
+				throw new ORPCError("BAD_REQUEST", {
 					message: `End-sem marks cannot exceed ${sub.maxEndsemMarks}`,
 				});
 			}
