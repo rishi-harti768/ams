@@ -51,7 +51,7 @@ Implementation tasks for the Academic Management System feature, derived from th
 - [ ] 6.2 Create Semester List page at `app/semesters/page.tsx`
 - [ ] 6.3 Create Semester Detail page at `app/semesters/[id]/page.tsx`
 - [ ] 6.4 Create Profile/Settings page at `app/settings/page.tsx`
-- [ ] 6.5 Create Onboarding page for new users at `app/onboarding/page.tsx`
+- [x] 6.5 Create Onboarding page for new users at `app/onboarding/page.tsx`
 
 ### Phase 7: Validation & Polish
 
