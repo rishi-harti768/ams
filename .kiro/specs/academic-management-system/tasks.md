@@ -39,11 +39,11 @@ Implementation tasks for the Academic Management System feature, derived from th
 
 ### Phase 5: Frontend - API Hooks
 
-- [ ] 5.1 Create React Query hooks for profile operations
-- [ ] 5.2 Create React Query hooks for semester operations
-- [ ] 5.3 Create React Query hooks for subject operations
-- [ ] 5.4 Create React Query hooks for score operations
-- [ ] 5.5 Create React Query hooks for CGPA/dashboard operations
+- [x] 5.1 Create React Query hooks for profile operations
+- [x] 5.2 Create React Query hooks for semester operations
+- [x] 5.3 Create React Query hooks for subject operations
+- [x] 5.4 Create React Query hooks for score operations
+- [x] 5.5 Create React Query hooks for CGPA/dashboard operations
 
 ### Phase 6: Frontend - Pages
 
