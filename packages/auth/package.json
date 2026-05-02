@@ -1,0 +1,24 @@
+{
+  "name": "@ams/auth",
+  "type": "module",
+  "exports": {
+    ".": {
+      "default": "./src/index.ts"
+    },
+    "./*": {
+      "default": "./src/*.ts"
+    }
+  },
+  "scripts": {},
+  "dependencies": {
+    "@ams/db": "workspace:*",
+    "@ams/env": "workspace:*",
+    "better-auth": "catalog:",
+    "dotenv": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@ams/config": "workspace:*",
+    "typescript": "catalog:"
+  }
+}
