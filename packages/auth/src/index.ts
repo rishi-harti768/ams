@@ -1,27 +1,32 @@
 import { createDb } from "@ams/db";
-import * as schema from "@ams/db/schema/auth";
+import { account, session, user, verification } from "@ams/db/schema/auth";
 import { env } from "@ams/env/server";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
 
 export function createAuth() {
-  const db = createDb();
+	const db = createDb();
 
-  return betterAuth({
-    database: drizzleAdapter(db, {
-      provider: "pg",
+	return betterAuth({
+		database: drizzleAdapter(db, {
+			provider: "pg",
 
-      schema: schema,
-    }),
-    trustedOrigins: [env.CORS_ORIGIN],
-    emailAndPassword: {
-      enabled: true,
-    },
-    secret: env.BETTER_AUTH_SECRET,
-    baseURL: env.BETTER_AUTH_URL,
-    plugins: [nextCookies()],
-  });
+			schema: {
+				user,
+				session,
+				account,
+				verification,
+			},
+		}),
+		trustedOrigins: [env.CORS_ORIGIN],
+		emailAndPassword: {
+			enabled: true,
+		},
+		secret: env.BETTER_AUTH_SECRET,
+		baseURL: env.BETTER_AUTH_URL,
+		plugins: [nextCookies()],
+	});
 }
 
 export const auth = createAuth();

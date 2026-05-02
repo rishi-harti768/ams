@@ -1,0 +1,68 @@
+# Tasks: Academic Management System (AMS)
+
+## Overview
+
+Implementation tasks for the Academic Management System feature, derived from the design document.
+
+## Implementation Order
+
+### Phase 1: Database & Schema
+
+- [ ] 1.1 Create `packages/db/src/schema/ams.ts` with all AMS tables (academicProfile, semester, subject, score)
+- [ ] 1.2 Export AMS schema in `packages/db/src/schema/index.ts`
+- [ ] 1.3 Run database migrations to create tables
+- [ ] 1.4 Add AMS relations to user in auth schema (optional, for queries)
+
+### Phase 2: API Layer
+
+- [ ] 2.1 Create profile router in `packages/api/src/routers/profile.ts`
+- [ ] 2.2 Create semester router in `packages/api/src/routers/semester.ts`
+- [ ] 2.3 Create subject router in `packages/api/src/routers/subject.ts`
+- [ ] 2.4 Create score router in `packages/api/src/routers/score.ts`
+- [ ] 2.5 Create cgpa router in `packages/api/src/routers/cgpa.ts`
+- [ ] 2.6 Register all routers in `packages/api/src/routers/index.ts`
+
+### Phase 3: CGPA Calculation Utilities
+
+- [ ] 3.1 Create `packages/ams/src/calculations.ts` with grade point function
+- [ ] 3.2 Create calculation functions for semester and cumulative CGPA
+- [ ] 3.3 Create score projection utilities
+- [ ] 3.4 Export types and functions from `packages/ams/src/index.ts`
+
+### Phase 4: Frontend - Core Components
+
+- [ ] 4.1 Create `CGPACard` component in `packages/ui/src/components/cgpa-card.tsx`
+- [ ] 4.2 Create `CGPAChart` component in `packages/ui/src/components/cgpa-chart.tsx`
+- [ ] 4.3 Create `ScoreInput` component in `packages/ui/src/components/score-input.tsx`
+- [ ] 4.4 Create `SubjectForm` component in `packages/ui/src/components/subject-form.tsx`
+- [ ] 4.5 Create `TargetForm` component in `packages/ui/src/components/target-form.tsx`
+
+### Phase 5: Frontend - API Hooks
+
+- [ ] 5.1 Create React Query hooks for profile operations
+- [ ] 5.2 Create React Query hooks for semester operations
+- [ ] 5.3 Create React Query hooks for subject operations
+- [ ] 5.4 Create React Query hooks for score operations
+- [ ] 5.5 Create React Query hooks for CGPA/dashboard operations
+
+### Phase 6: Frontend - Pages
+
+- [ ] 6.1 Create Dashboard page at `app/dashboard/page.tsx`
+- [ ] 6.2 Create Semester List page at `app/semesters/page.tsx`
+- [ ] 6.3 Create Semester Detail page at `app/semesters/[id]/page.tsx`
+- [ ] 6.4 Create Profile/Settings page at `app/settings/page.tsx`
+- [ ] 6.5 Create Onboarding page for new users at `app/onboarding/page.tsx`
+
+### Phase 7: Validation & Polish
+
+- [ ] 7.1 Add Zod validation schemas to all API inputs
+- [ ] 7.2 Add error handling and user-friendly error messages
+- [ ] 7.3 Run biome formatting on all new files
+- [ ] 7.4 Verify all acceptance criteria are met
+
+## Notes
+
+- All API routes must use `protectedProcedure` for authentication
+- Database queries must filter by `context.session.user.id` for data isolation
+- Frontend should use optimistic updates where appropriate
+- CGPA calculations should handle edge cases (null scores, zero subjects)
