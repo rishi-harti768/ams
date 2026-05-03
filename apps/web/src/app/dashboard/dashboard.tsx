@@ -47,8 +47,8 @@ export default function Dashboard() {
 					Start by adding your first semester to begin tracking your
 					performance.
 				</p>
-				<Button asChild className="mt-6">
-					<Link href="/semesters">Get Started</Link>
+				<Button render={<Link href="/semesters" />} nativeButton={false} className="mt-6">
+					Get Started
 				</Button>
 			</div>
 		);
@@ -161,16 +161,14 @@ export default function Dashboard() {
 									{activeSemester?.name || "No active semester set"}
 								</CardDescription>
 							</div>
-							<Button asChild size="icon" variant="ghost">
-								<Link
+							<Button render={<Link
 									href={
 										activeSemester
 											? `/semesters/${activeSemester.id}`
 											: "/semesters"
 									}
-								>
+								/>} nativeButton={false} size="icon" variant="ghost">
 									<ArrowRight className="h-4 w-4" />
-								</Link>
 							</Button>
 						</CardHeader>
 						<CardContent>
@@ -239,13 +237,12 @@ export default function Dashboard() {
 												))}
 												{projectionData.length > 4 && (
 													<Button
-														asChild
+														render={<Link href={`/semesters/${activeSemester.id}`} />}
+														nativeButton={false}
 														className="w-full text-xs"
 														variant="ghost"
 													>
-														<Link href={`/semesters/${activeSemester.id}`}>
 															View all {projectionData.length} subjects
-														</Link>
 													</Button>
 												)}
 											</div>

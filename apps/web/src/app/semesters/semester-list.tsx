@@ -76,11 +76,9 @@ export default function SemesterList() {
 					</p>
 				</div>
 				<Dialog onOpenChange={setIsOpen} open={isOpen}>
-					<DialogTrigger asChild>
-						<Button>
-							<Plus className="mr-2 h-4 w-4" /> Add Semester
-						</Button>
-					</DialogTrigger>
+				<DialogTrigger render={<Button />}>
+						<Plus className="mr-2 h-4 w-4" /> Add Semester
+				</DialogTrigger>
 					<DialogContent className="sm:max-w-[425px]">
 						<DialogHeader>
 							<DialogTitle>Add New Semester</DialogTitle>
@@ -135,10 +133,8 @@ export default function SemesterList() {
 										</CardDescription>
 									</div>
 									<DropdownMenu>
-										<DropdownMenuTrigger asChild>
-											<Button className="h-8 w-8" size="icon" variant="ghost">
+										<DropdownMenuTrigger render={<Button className="h-8 w-8" size="icon" variant="ghost" />}>
 												<MoreVertical className="h-4 w-4" />
-											</Button>
 										</DropdownMenuTrigger>
 										<DropdownMenuContent align="end">
 											<DropdownMenuItem
@@ -180,10 +176,8 @@ export default function SemesterList() {
 								</div>
 							</CardContent>
 							<CardFooter className="pt-0">
-								<Button asChild className="w-full" variant="outline">
-									<Link href={`/semesters/${semester.id}`}>
+								<Button render={<Link href={`/semesters/${semester.id}`} />} nativeButton={false} className="w-full" variant="outline">
 										View Details <ExternalLink className="ml-2 h-4 w-4" />
-									</Link>
 								</Button>
 							</CardFooter>
 						</Card>

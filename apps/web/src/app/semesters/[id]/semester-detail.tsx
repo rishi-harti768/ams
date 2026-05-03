@@ -79,10 +79,8 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 					The semester you're looking for doesn't exist or you don't have
 					access.
 				</p>
-				<Button asChild className="mt-6" variant="outline">
-					<Link href="/semesters">
+				<Button render={<Link href="/semesters" />} nativeButton={false} className="mt-6" variant="outline">
 						<ArrowLeft className="mr-2 h-4 w-4" /> Back to Semesters
-					</Link>
 				</Button>
 			</div>
 		);
@@ -103,14 +101,13 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 			<div className="flex flex-col gap-6 border-b pb-8 md:flex-row md:items-end md:justify-between">
 				<div className="space-y-2">
 					<Button
-						asChild
+						render={<Link href="/semesters" />}
+						nativeButton={false}
 						className="-ml-2 h-8 text-muted-foreground"
 						size="sm"
 						variant="ghost"
 					>
-						<Link href="/semesters">
-							<ArrowLeft className="mr-2 h-4 w-4" /> Back to Semesters
-						</Link>
+						<ArrowLeft className="mr-2 h-4 w-4" /> Back to Semesters
 					</Button>
 					<div className="flex items-center gap-3">
 						<h1 className="font-bold text-4xl tracking-tight">
@@ -141,10 +138,8 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 						</div>
 					</Card>
 					<Dialog onOpenChange={setIsAddSubjectOpen} open={isAddSubjectOpen}>
-						<DialogTrigger asChild>
-							<Button className="h-12 px-6">
-								<Plus className="mr-2 h-4 w-4" /> Add Subject
-							</Button>
+						<DialogTrigger render={<Button className="h-12 px-6" />}>
+							<Plus className="mr-2 h-4 w-4" /> Add Subject
 						</DialogTrigger>
 						<DialogContent>
 							<DialogHeader>
