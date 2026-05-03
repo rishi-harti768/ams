@@ -11,14 +11,26 @@ import {
 import { CGPACard } from "@ams/ui/components/cgpa-card";
 import { CGPAChart } from "@ams/ui/components/cgpa-chart";
 import { Skeleton } from "@ams/ui/components/skeleton";
-import { ArrowRight, BookOpen, Calculator, Target, Trophy } from "lucide-react";
+import {
+	ArrowRight,
+	BookOpen,
+	Calculator,
+	Target,
+	TrendingUp,
+	Trophy,
+} from "lucide-react";
 import Link from "next/link";
-import { useCGPAProjection, useDashboardData } from "@/hooks/use-cgpa";
+import {
+	useCGPAProjection,
+	useCumulativeCGPAProjection,
+	useDashboardData,
+} from "@/hooks/use-cgpa";
 
 export default function Dashboard() {
 	const { data, isLoading } = useDashboardData();
 	const activeSemesterId = data?.activeSemester?.id;
 	const { data: projectionData } = useCGPAProjection(activeSemesterId || "");
+	const { data: cumulativeProjection } = useCumulativeCGPAProjection();
 
 	if (isLoading) {
 		return <DashboardSkeleton />;
@@ -77,6 +89,51 @@ export default function Dashboard() {
 					value={activeSemester?.cgpa || "Pending"}
 				/>
 			</div>
+
+			{/* Cumulative Goal Projection Alert */}
+			{cumulativeProjection &&
+				!cumulativeProjection.achievable &&
+				cumulativeProjection.remainingSemesters > 0 && (
+					<div className="flex gap-4 rounded-xl border border-rose-100 bg-rose-50 p-6">
+						<Calculator className="size-6 shrink-0 text-rose-500" />
+						<div className="space-y-1">
+							<h4 className="font-bold text-rose-900 text-sm">
+								Cumulative Goal at Risk
+							</h4>
+							<p className="text-rose-700 text-xs leading-relaxed">
+								To reach your target of{" "}
+								{cumulativeProjection.targetCumulativeCGPA.toFixed(2)}, you
+								would need an average of{" "}
+								<span className="font-black">
+									{cumulativeProjection.required.toFixed(2)}
+								</span>{" "}
+								CGPA in the remaining {cumulativeProjection.remainingSemesters}{" "}
+								semesters, which is mathematically unachievable.
+							</p>
+						</div>
+					</div>
+				)}
+
+			{cumulativeProjection?.achievable &&
+				cumulativeProjection.required > currentCumulativeCGPA && (
+					<div className="flex gap-4 rounded-xl border border-blue-100 bg-blue-50 p-6">
+						<TrendingUp className="size-6 shrink-0 text-blue-500" />
+						<div className="space-y-1">
+							<h4 className="font-bold text-blue-900 text-sm">
+								Road to Target
+							</h4>
+							<p className="text-blue-700 text-xs leading-relaxed">
+								You need to maintain an average of{" "}
+								<span className="font-black">
+									{cumulativeProjection.required.toFixed(2)}
+								</span>{" "}
+								CGPA across the remaining{" "}
+								{cumulativeProjection.remainingSemesters} semesters to hit your
+								goal.
+							</p>
+						</div>
+					</div>
+				)}
 
 			<div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
 				{/* Chart Section */}
@@ -154,16 +211,19 @@ export default function Dashboard() {
 																{subject.name}
 															</span>
 															<span className="text-[10px] text-muted-foreground">
-																Need:{" "}
-																<span
-																	className={
-																		subject.achievable
-																			? "font-semibold text-emerald-500"
-																			: "font-semibold text-rose-500"
-																	}
-																>
-																	{subject.required.toFixed(1)}
-																</span>
+																{subject.achievable ? (
+																	<>
+																		Need:{" "}
+																		<span className="font-semibold text-emerald-500">
+																			{subject.required.toFixed(1)}
+																		</span>
+																	</>
+																) : (
+																	<span className="font-semibold text-rose-500">
+																		Unachievable (Max GP:{" "}
+																		{subject.maxAchievableGP})
+																	</span>
+																)}
 															</span>
 														</div>
 														<div className="flex items-center gap-2">

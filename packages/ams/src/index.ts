@@ -141,7 +141,12 @@ export function calculateRequiredEndsem(
 	maxInternalMarks: number,
 	maxEndsemMarks: number,
 	targetCGPA: number
-): { required: number; achievable: boolean } {
+): {
+	required: number;
+	achievable: boolean;
+	maxAchievableGP: number;
+	maxAchievablePercentage: number;
+} {
 	const minPercentage = getMinPercentageForGradePoint(targetCGPA);
 	const totalMax = maxInternalMarks + maxEndsemMarks;
 
@@ -150,9 +155,15 @@ export function calculateRequiredEndsem(
 
 	const achievable = requiredEndsem <= maxEndsemMarks;
 
+	const maxAchievableTotalMarks = internalMarks + maxEndsemMarks;
+	const maxAchievablePercentage = (maxAchievableTotalMarks / totalMax) * 100;
+	const maxAchievableGP = calculateGradePoint(maxAchievablePercentage);
+
 	return {
 		required: Math.max(0, Number(requiredEndsem.toFixed(2))),
 		achievable,
+		maxAchievableGP,
+		maxAchievablePercentage: Number(maxAchievablePercentage.toFixed(2)),
 	};
 }
 

@@ -18,6 +18,7 @@ export const profileRouter = {
 				institutionType: z.enum(["school", "college"]),
 				institutionName: z.string().optional(),
 				currentSemester: z.number().min(1).max(20),
+				totalSemesters: z.number().min(1).max(20).default(8),
 				targetCumulativeCGPA: z.number().min(0).max(10).optional(),
 			})
 		)
@@ -29,6 +30,7 @@ export const profileRouter = {
 					institutionType: input.institutionType,
 					institutionName: input.institutionName,
 					currentSemester: input.currentSemester,
+					totalSemesters: input.totalSemesters,
 					targetCumulativeCGPA: input.targetCumulativeCGPA?.toString(),
 				})
 				.returning();
@@ -41,6 +43,7 @@ export const profileRouter = {
 				institutionType: z.enum(["school", "college"]).optional(),
 				institutionName: z.string().optional(),
 				currentSemester: z.number().min(1).max(20).optional(),
+				totalSemesters: z.number().min(1).max(20).optional(),
 				targetCumulativeCGPA: z.number().min(0).max(10).optional(),
 			})
 		)
@@ -56,6 +59,9 @@ export const profileRouter = {
 					}),
 					...(input.currentSemester && {
 						currentSemester: input.currentSemester,
+					}),
+					...(input.totalSemesters && {
+						totalSemesters: input.totalSemesters,
 					}),
 					...(input.targetCumulativeCGPA !== undefined && {
 						targetCumulativeCGPA: input.targetCumulativeCGPA?.toString(),

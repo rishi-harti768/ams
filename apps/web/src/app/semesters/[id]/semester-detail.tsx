@@ -177,118 +177,18 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 						</Card>
 					) : (
 						<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-							{subjects.map((subject) => {
-								const score = subject.scores[0];
-								const projection = projections?.find(
-									(p) => p.subjectId === subject.id
-								);
-
-								return (
-									<Card
-										className="group relative overflow-hidden border-slate-200/60 transition-all hover:shadow-lg"
-										key={subject.id}
-									>
-										<CardHeader className="flex flex-row items-start justify-between space-y-0 pb-3">
-											<div className="space-y-1">
-												<CardTitle className="text-lg leading-tight transition-colors group-hover:text-primary">
-													{subject.name}
-												</CardTitle>
-												<CardDescription className="font-medium">
-													{subject.creditHours} Credits
-												</CardDescription>
-											</div>
-											<Button
-												className="h-8 w-8 text-muted-foreground opacity-0 transition-all hover:text-destructive group-hover:opacity-100"
-												onClick={() => deleteSubject({ id: subject.id })}
-												size="icon"
-												variant="ghost"
-											>
-												<Trash2 className="h-4 w-4" />
-											</Button>
-										</CardHeader>
-										<CardContent className="space-y-6">
-											<div className="grid grid-cols-2 gap-4">
-												<ScoreInput
-													label="Internal"
-													max={subject.maxInternalMarks}
-													onValueChange={(val) =>
-														updateInternal({
-															subjectId: subject.id,
-															internalMarks: val,
-														})
-													}
-													value={
-														score?.internalMarks
-															? Number(score.internalMarks)
-															: null
-													}
-												/>
-												<ScoreInput
-													label="End-Sem"
-													max={subject.maxEndsemMarks}
-													onValueChange={(val) =>
-														updateEndsem({
-															subjectId: subject.id,
-															endsemMarks: val,
-														})
-													}
-													value={
-														score?.endsemMarks
-															? Number(score.endsemMarks)
-															: null
-													}
-												/>
-											</div>
-
-											{/* Result Summary */}
-											<div className="flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50/80 p-3">
-												<div className="flex items-center gap-2">
-													<div
-														className={cn(
-															"flex size-8 items-center justify-center rounded-full font-bold text-xs",
-															score?.gradePoint && Number(score.gradePoint) >= 4
-																? "bg-emerald-500/10 text-emerald-600"
-																: "bg-slate-200 text-slate-500"
-														)}
-													>
-														{score?.gradePoint
-															? Number(score.gradePoint).toFixed(0)
-															: "—"}
-													</div>
-													<div className="flex flex-col">
-														<span className="font-bold text-[10px] text-muted-foreground uppercase tracking-wider">
-															Grade Point
-														</span>
-														<span className="font-semibold text-xs">
-															{score?.gradePoint
-																? getGradeLabel(Number(score.gradePoint))
-																: "Pending"}
-														</span>
-													</div>
-												</div>
-
-												{projection && !score?.endsemMarks && (
-													<div className="text-right">
-														<p className="font-bold text-[10px] text-primary/70 uppercase tracking-wider">
-															Target Need
-														</p>
-														<p
-															className={cn(
-																"font-bold text-xs",
-																projection.achievable
-																	? "text-emerald-500"
-																	: "text-rose-500"
-															)}
-														>
-															{projection.required.toFixed(1)} marks
-														</p>
-													</div>
-												)}
-											</div>
-										</CardContent>
-									</Card>
-								);
-							})}
+							{subjects.map((subject) => (
+								<SubjectCard
+									deleteSubject={deleteSubject}
+									key={subject.id}
+									projection={projections?.find(
+										(p) => p.subjectId === subject.id
+									)}
+									subject={subject}
+									updateEndsem={updateEndsem}
+									updateInternal={updateInternal}
+								/>
+							))}
 						</div>
 					)}
 				</div>
@@ -383,6 +283,141 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 				</div>
 			</div>
 		</div>
+	);
+}
+
+interface Projection {
+	achievable: boolean;
+	maxAchievableGP: number;
+	maxAchievablePercentage: number;
+	required: number;
+}
+
+interface SubjectCardProps {
+	deleteSubject: (val: { id: string }) => void;
+	projection?: Projection;
+	// biome-ignore lint/suspicious/noExplicitAny: Complex drizzle type with relations
+	subject: any;
+	updateEndsem: (val: {
+		subjectId: string;
+		endsemMarks: number | null;
+	}) => void;
+	updateInternal: (val: {
+		subjectId: string;
+		internalMarks: number | null;
+	}) => void;
+}
+
+function SubjectCard({
+	subject,
+	projection,
+	deleteSubject,
+	updateInternal,
+	updateEndsem,
+}: SubjectCardProps) {
+	const score = subject.scores[0];
+
+	return (
+		<Card
+			className="group relative overflow-hidden border-slate-200/60 transition-all hover:shadow-lg"
+			key={subject.id}
+		>
+			<CardHeader className="flex flex-row items-start justify-between space-y-0 pb-3">
+				<div className="space-y-1">
+					<CardTitle className="text-lg leading-tight transition-colors group-hover:text-primary">
+						{subject.name}
+					</CardTitle>
+					<CardDescription className="font-medium">
+						{subject.creditHours} Credits
+					</CardDescription>
+				</div>
+				<Button
+					className="h-8 w-8 text-muted-foreground opacity-0 transition-all hover:text-destructive group-hover:opacity-100"
+					onClick={() => deleteSubject({ id: subject.id })}
+					size="icon"
+					variant="ghost"
+				>
+					<Trash2 className="h-4 w-4" />
+				</Button>
+			</CardHeader>
+			<CardContent className="space-y-6">
+				<div className="grid grid-cols-2 gap-4">
+					<ScoreInput
+						label="Internal"
+						max={subject.maxInternalMarks}
+						onValueChange={(val) =>
+							updateInternal({
+								subjectId: subject.id,
+								internalMarks: val,
+							})
+						}
+						value={score?.internalMarks ? Number(score.internalMarks) : null}
+					/>
+					<ScoreInput
+						label="End-Sem"
+						max={subject.maxEndsemMarks}
+						onValueChange={(val) =>
+							updateEndsem({
+								subjectId: subject.id,
+								endsemMarks: val,
+							})
+						}
+						value={score?.endsemMarks ? Number(score.endsemMarks) : null}
+					/>
+				</div>
+
+				{/* Result Summary */}
+				<div className="flex items-center justify-between rounded-lg border border-slate-100 bg-slate-50/80 p-3">
+					<div className="flex items-center gap-2">
+						<div
+							className={cn(
+								"flex size-8 items-center justify-center rounded-full font-bold text-xs",
+								score?.gradePoint && Number(score.gradePoint) >= 4
+									? "bg-emerald-500/10 text-emerald-600"
+									: "bg-slate-200 text-slate-500"
+							)}
+						>
+							{score?.gradePoint ? Number(score.gradePoint).toFixed(0) : "—"}
+						</div>
+						<div className="flex flex-col">
+							<span className="font-bold text-[10px] text-muted-foreground uppercase tracking-wider">
+								Grade Point
+							</span>
+							<span className="font-semibold text-xs">
+								{score?.gradePoint
+									? getGradeLabel(Number(score.gradePoint))
+									: "Pending"}
+							</span>
+						</div>
+					</div>
+
+					{projection && !score?.endsemMarks && (
+						<div className="text-right">
+							<p className="font-bold text-[10px] text-primary/70 uppercase tracking-wider">
+								Target Need
+							</p>
+							<div
+								className={cn(
+									"font-bold text-xs",
+									projection.achievable ? "text-emerald-500" : "text-rose-500"
+								)}
+							>
+								{projection.achievable ? (
+									`${projection.required.toFixed(1)} marks`
+								) : (
+									<div className="flex flex-col items-end text-[10px]">
+										<span>Unachievable</span>
+										<span className="font-normal opacity-70">
+											(Max GP: {projection.maxAchievableGP})
+										</span>
+									</div>
+								)}
+							</div>
+						</div>
+					)}
+				</div>
+			</CardContent>
+		</Card>
 	);
 }
 

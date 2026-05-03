@@ -1,6 +1,7 @@
 import {
 	calculateCumulativeCGPA,
 	calculateRequiredEndsem,
+	calculateRequiredSemesterCGPA,
 	calculateSemesterCGPA,
 	type SubjectWithScore,
 } from "@ams/ams";
@@ -196,4 +197,78 @@ export const cgpaRouter = {
 
 			return projections;
 		}),
+	cgpaCumulativeProjection: protectedProcedure.handler(async ({ context }) => {
+		const userId = context.session.user.id;
+
+		const profile = await db.query.academicProfile.findFirst({
+			where: eq(academicProfile.userId, userId),
+		});
+
+		if (!profile?.targetCumulativeCGPA) {
+			throw new ORPCError("BAD_REQUEST", {
+				message: "No cumulative target CGPA set",
+			});
+		}
+
+		const semesters = await db.query.semester.findMany({
+			where: eq(semester.userId, userId),
+			with: {
+				subjects: {
+					with: {
+						scores: true,
+					},
+				},
+			},
+		});
+
+		const semesterData = semesters.map((sem) => {
+			const subjects = sem.subjects.map((sub) => ({
+				creditHours: sub.creditHours,
+				maxInternalMarks: sub.maxInternalMarks,
+				maxEndsemMarks: sub.maxEndsemMarks,
+				internalMarks: sub.scores[0]?.internalMarks
+					? Number(sub.scores[0].internalMarks)
+					: null,
+				endsemMarks: sub.scores[0]?.endsemMarks
+					? Number(sub.scores[0].endsemMarks)
+					: null,
+			}));
+
+			return {
+				cgpa: calculateSemesterCGPA(subjects),
+				totalCredits: sem.subjects.reduce((sum, s) => sum + s.creditHours, 0),
+			};
+		});
+
+		const currentCumulativeCGPA = calculateCumulativeCGPA(semesterData);
+		const currentTotalCredits = semesterData.reduce(
+			(sum, s) => sum + s.totalCredits,
+			0
+		);
+
+		const remainingSemesters =
+			profile.totalSemesters - profile.currentSemester + 1;
+
+		// Estimate average credits per semester from existing ones, or default to 20
+		const averageCredits =
+			semesterData.length > 0
+				? semesterData.reduce((sum, s) => sum + s.totalCredits, 0) /
+					semesterData.length
+				: 20;
+
+		const projection = calculateRequiredSemesterCGPA(
+			currentCumulativeCGPA,
+			currentTotalCredits,
+			Number(profile.targetCumulativeCGPA),
+			Math.max(1, remainingSemesters),
+			averageCredits
+		);
+
+		return {
+			...projection,
+			currentCumulativeCGPA,
+			targetCumulativeCGPA: Number(profile.targetCumulativeCGPA),
+			remainingSemesters,
+		};
+	}),
 };

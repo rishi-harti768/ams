@@ -51,14 +51,21 @@ Implementation tasks for the Academic Management System feature, derived from th
 - [x] 6.2 Create Semester List page at `app/semesters/page.tsx`
 - [x] 6.3 Create Semester Detail page at `app/semesters/[id]/page.tsx`
 - [x] 6.4 Create Profile/Settings page at `app/settings/page.tsx`
-- [x] 6.5 Create Onboarding page for new users at `app/onboarding/page.tsx`
+        - [x] 6.5 Create Onboarding page for new users at `app/onboarding/page.tsx`
 
 ### Phase 7: Validation & Polish
 
 - [x] 7.1 Add Zod validation schemas to all API inputs
 - [x] 7.2 Add error handling and user-friendly error messages
 - [x] 7.3 Run biome formatting on all new files
-- [x] 7.4 Verify all acceptance criteria are met
+- [x] 7.4 Verify all acceptance criteria are met (Audit missing requirements)
+
+### Phase 8: Advanced Projections & Final Refinements
+
+- [x] 8.1 Update score projection to return maximum achievable CGPA (Req 13.3)
+- [x] 8.2 Implement cumulative goal projection API (Req 14.1)
+- [x] 8.3 Display cumulative goal projection on Dashboard (Req 14.2)
+- [x] 8.4 Improve UI for unachievable targets with explicit labels (Req 13.2)
 
 ## Notes
 

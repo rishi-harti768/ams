@@ -37,3 +37,10 @@ export function useCGPAProjection(semesterId: string) {
 		}
 	);
 }
+
+/**
+ * Hook to fetch cumulative goal projection
+ */
+export function useCumulativeCGPAProjection() {
+	return orpc.cgpaCumulativeProjection.useQuery();
+}

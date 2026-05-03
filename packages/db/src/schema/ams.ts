@@ -24,6 +24,7 @@ export const academicProfile = pgTable(
 		}).notNull(),
 		institutionName: text("institution_name"),
 		currentSemester: integer("current_semester").notNull().default(1),
+		totalSemesters: integer("total_semesters").notNull().default(8),
 		targetCumulativeCGPA: decimal("target_cumulative_cgpa", {
 			precision: 3,
 			scale: 2,
