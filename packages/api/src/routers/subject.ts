@@ -3,9 +3,9 @@ import { score, semester, subject } from "@ams/db/schema/ams";
 import { ORPCError } from "@orpc/server";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
-import { protectedProcedure } from "../index";
+import { o, protectedProcedure } from "../index";
 
-export const subjectRouter = {
+export const subjectRouter = o.router({
 	subjectList: protectedProcedure
 		.input(z.object({ semesterId: z.string().uuid() }))
 		.handler(async ({ input, context }) => {
@@ -143,4 +143,4 @@ export const subjectRouter = {
 
 			return deletedSubject;
 		}),
-};
+});

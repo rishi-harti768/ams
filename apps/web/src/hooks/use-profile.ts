@@ -5,7 +5,7 @@ import { orpc } from "@/utils/orpc";
  * Hook to fetch the current user's academic profile
  */
 export function useProfile() {
-	return orpc.profile.useQuery();
+	return orpc.profile.profile.useQuery();
 }
 
 /**
@@ -14,7 +14,7 @@ export function useProfile() {
 export function useCreateProfile() {
 	const utils = orpc.useUtils();
 
-	return orpc.profileCreate.useMutation({
+	return orpc.profile.profileCreate.useMutation({
 		onSuccess: () => {
 			toast.success("Profile created successfully");
 			utils.profile.invalidate();
@@ -31,7 +31,7 @@ export function useCreateProfile() {
 export function useUpdateProfile() {
 	const utils = orpc.useUtils();
 
-	return orpc.profileUpdate.useMutation({
+	return orpc.profile.profileUpdate.useMutation({
 		onSuccess: () => {
 			toast.success("Profile updated successfully");
 			utils.profile.invalidate();

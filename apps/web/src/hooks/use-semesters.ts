@@ -5,14 +5,14 @@ import { orpc } from "@/utils/orpc";
  * Hook to fetch all semesters for the current user
  */
 export function useSemesters() {
-	return orpc.semesterList.useQuery();
+	return orpc.semester.semesterList.useQuery();
 }
 
 /**
  * Hook to fetch a specific semester by ID
  */
 export function useSemester(id: string) {
-	return orpc.semesterGet.useQuery(
+	return orpc.semester.semesterGet.useQuery(
 		{ id },
 		{
 			enabled: !!id,
@@ -26,10 +26,10 @@ export function useSemester(id: string) {
 export function useCreateSemester() {
 	const utils = orpc.useUtils();
 
-	return orpc.semesterCreate.useMutation({
+	return orpc.semester.semesterCreate.useMutation({
 		onSuccess: () => {
 			toast.success("Semester created successfully");
-			utils.semesterList.invalidate();
+			utils.semester.semesterList.invalidate();
 		},
 		onError: (error) => {
 			toast.error(`Failed to create semester: ${error.message}`);
@@ -43,12 +43,12 @@ export function useCreateSemester() {
 export function useUpdateSemester() {
 	const utils = orpc.useUtils();
 
-	return orpc.semesterUpdate.useMutation({
+	return orpc.semester.semesterUpdate.useMutation({
 		onSuccess: (data) => {
 			toast.success("Semester updated successfully");
-			utils.semesterList.invalidate();
+			utils.semester.semesterList.invalidate();
 			if (data) {
-				utils.semesterGet.invalidate({ id: data.id });
+				utils.semester.semesterGet.invalidate({ id: data.id });
 			}
 		},
 		onError: (error) => {
@@ -63,10 +63,10 @@ export function useUpdateSemester() {
 export function useDeleteSemester() {
 	const utils = orpc.useUtils();
 
-	return orpc.semesterDelete.useMutation({
+	return orpc.semester.semesterDelete.useMutation({
 		onSuccess: () => {
 			toast.success("Semester deleted successfully");
-			utils.semesterList.invalidate();
+			utils.semester.semesterList.invalidate();
 		},
 		onError: (error) => {
 			toast.error(`Failed to delete semester: ${error.message}`);
@@ -80,10 +80,10 @@ export function useDeleteSemester() {
 export function useSetActiveSemester() {
 	const utils = orpc.useUtils();
 
-	return orpc.semesterSetActive.useMutation({
+	return orpc.semester.semesterSetActive.useMutation({
 		onSuccess: () => {
 			toast.success("Active semester updated");
-			utils.semesterList.invalidate();
+			utils.semester.semesterList.invalidate();
 		},
 		onError: (error) => {
 			toast.error(`Failed to set active semester: ${error.message}`);

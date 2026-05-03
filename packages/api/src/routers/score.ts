@@ -1,50 +1,12 @@
+import { calculateGradePoint, calculateTotalPercentage } from "@ams/ams";
 import { db } from "@ams/db";
 import { score, subject } from "@ams/db/schema/ams";
 import { ORPCError } from "@orpc/server";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { protectedProcedure } from "../index";
+import { o, protectedProcedure } from "../index";
 
-function calculateGradePoint(totalPercentage: number): number {
-	if (totalPercentage >= 90) {
-		return 10; // O - Outstanding
-	}
-	if (totalPercentage >= 80) {
-		return 9; // A+ - Excellent
-	}
-	if (totalPercentage >= 70) {
-		return 8; // A - Very Good
-	}
-	if (totalPercentage >= 60) {
-		return 7; // B+ - Good
-	}
-	if (totalPercentage >= 55) {
-		return 6; // B - Above Average
-	}
-	if (totalPercentage >= 50) {
-		return 5; // C - Average
-	}
-	if (totalPercentage >= 45) {
-		return 4; // P - Pass
-	}
-	return 0; // F - Fail
-}
-
-function calculateTotalPercentage(
-	internalMarks: number | null,
-	endsemMarks: number | null,
-	maxInternalMarks: number,
-	maxEndsemMarks: number
-): number | null {
-	if (internalMarks === null || endsemMarks === null) {
-		return null; // Pending
-	}
-	return (
-		((internalMarks + endsemMarks) / (maxInternalMarks + maxEndsemMarks)) * 100
-	);
-}
-
-export const scoreRouter = {
+export const scoreRouter = o.router({
 	scoreGet: protectedProcedure
 		.input(z.object({ subjectId: z.string().uuid() }))
 		.handler(async ({ input, context }) => {
@@ -183,4 +145,4 @@ export const scoreRouter = {
 
 			return updatedScore;
 		}),
-};
+});

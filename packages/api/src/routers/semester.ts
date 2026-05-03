@@ -2,9 +2,9 @@ import { db } from "@ams/db";
 import { semester } from "@ams/db/schema/ams";
 import { and, desc, eq } from "drizzle-orm";
 import { z } from "zod";
-import { protectedProcedure } from "../index";
+import { o, protectedProcedure } from "../index";
 
-export const semesterRouter = {
+export const semesterRouter = o.router({
 	semesterList: protectedProcedure.handler(async ({ context }) => {
 		const semesters = await db.query.semester.findMany({
 			where: eq(semester.userId, context.session.user.id),
@@ -146,4 +146,4 @@ export const semesterRouter = {
 					return updatedSemester;
 				})
 		),
-};
+});

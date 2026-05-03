@@ -11,6 +11,7 @@ export interface ProfileFormValues {
 	institutionName?: string;
 	institutionType: "school" | "college";
 	targetCumulativeCGPA?: number;
+	totalSemesters: number;
 }
 
 interface ProfileFormProps {
@@ -29,6 +30,7 @@ export function ProfileForm({
 			institutionType: initialValues?.institutionType ?? "college",
 			institutionName: initialValues?.institutionName ?? "",
 			currentSemester: initialValues?.currentSemester ?? 1,
+			totalSemesters: initialValues?.totalSemesters ?? 8,
 			targetCumulativeCGPA: initialValues?.targetCumulativeCGPA ?? 8.0,
 		} as ProfileFormValues,
 		onSubmit: ({ value }) => {
@@ -114,7 +116,7 @@ export function ProfileForm({
 					)}
 				</form.Field>
 
-				<div className="grid grid-cols-2 gap-4">
+				<div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
 					<form.Field
 						name="currentSemester"
 						validators={{
@@ -154,6 +156,44 @@ export function ProfileForm({
 					</form.Field>
 
 					<form.Field
+						name="totalSemesters"
+						validators={{
+							onChange: ({ value }) =>
+								value < 1 || value > 20
+									? "Must be between 1 and 20"
+									: undefined,
+						}}
+					>
+						{(field) => (
+							<div className="grid gap-2">
+								<Label
+									className="font-semibold text-[11px] uppercase"
+									htmlFor={field.name}
+								>
+									Total Semesters
+								</Label>
+								<Input
+									className="h-10"
+									id={field.name}
+									max="20"
+									min="1"
+									onBlur={field.handleBlur}
+									onChange={(e) =>
+										field.handleChange(Number.parseInt(e.target.value, 10))
+									}
+									type="number"
+									value={field.state.value}
+								/>
+								{field.state.meta.errors.length > 0 && (
+									<p className="font-medium text-[10px] text-rose-500">
+										{field.state.meta.errors.join(", ")}
+									</p>
+								)}
+							</div>
+						)}
+					</form.Field>
+
+					<form.Field
 						name="targetCumulativeCGPA"
 						validators={{
 							onChange: ({ value }) =>
@@ -168,7 +208,7 @@ export function ProfileForm({
 									className="font-semibold text-[11px] uppercase"
 									htmlFor={field.name}
 								>
-									Target Cumulative CGPA
+									Target CGPA
 								</Label>
 								<Input
 									className="h-10"

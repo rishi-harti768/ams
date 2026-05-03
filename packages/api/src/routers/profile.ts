@@ -2,9 +2,9 @@ import { db } from "@ams/db";
 import { academicProfile } from "@ams/db/schema/ams";
 import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { protectedProcedure } from "../index";
+import { o, protectedProcedure } from "../index";
 
-export const profileRouter = {
+export const profileRouter = o.router({
 	profile: protectedProcedure.handler(async ({ context }) => {
 		const profile = await db.query.academicProfile.findFirst({
 			where: eq(academicProfile.userId, context.session.user.id),
@@ -71,4 +71,4 @@ export const profileRouter = {
 				.returning();
 			return updatedProfile;
 		}),
-};
+});

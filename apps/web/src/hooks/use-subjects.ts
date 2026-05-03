@@ -5,7 +5,7 @@ import { orpc } from "@/utils/orpc";
  * Hook to fetch all subjects for a specific semester
  */
 export function useSubjects(semesterId: string) {
-	return orpc.subjectList.useQuery(
+	return orpc.subject.subjectList.useQuery(
 		{ semesterId },
 		{
 			enabled: !!semesterId,
@@ -19,12 +19,12 @@ export function useSubjects(semesterId: string) {
 export function useCreateSubject() {
 	const utils = orpc.useUtils();
 
-	return orpc.subjectCreate.useMutation({
+	return orpc.subject.subjectCreate.useMutation({
 		onSuccess: (data) => {
 			toast.success("Subject added successfully");
 			if (data) {
-				utils.subjectList.invalidate({ semesterId: data.semesterId });
-				utils.semesterGet.invalidate({ id: data.semesterId });
+				utils.subject.subjectList.invalidate({ semesterId: data.semesterId });
+				utils.semester.semesterGet.invalidate({ id: data.semesterId });
 			}
 		},
 		onError: (error) => {
@@ -39,12 +39,12 @@ export function useCreateSubject() {
 export function useUpdateSubject() {
 	const utils = orpc.useUtils();
 
-	return orpc.subjectUpdate.useMutation({
+	return orpc.subject.subjectUpdate.useMutation({
 		onSuccess: (data) => {
 			toast.success("Subject updated successfully");
 			if (data) {
-				utils.subjectList.invalidate({ semesterId: data.semesterId });
-				utils.semesterGet.invalidate({ id: data.semesterId });
+				utils.subject.subjectList.invalidate({ semesterId: data.semesterId });
+				utils.semester.semesterGet.invalidate({ id: data.semesterId });
 			}
 		},
 		onError: (error) => {
@@ -59,12 +59,12 @@ export function useUpdateSubject() {
 export function useDeleteSubject() {
 	const utils = orpc.useUtils();
 
-	return orpc.subjectDelete.useMutation({
+	return orpc.subject.subjectDelete.useMutation({
 		onSuccess: (data) => {
 			toast.success("Subject deleted successfully");
 			if (data) {
-				utils.subjectList.invalidate({ semesterId: data.semesterId });
-				utils.semesterGet.invalidate({ id: data.semesterId });
+				utils.subject.subjectList.invalidate({ semesterId: data.semesterId });
+				utils.semester.semesterGet.invalidate({ id: data.semesterId });
 			}
 		},
 		onError: (error) => {

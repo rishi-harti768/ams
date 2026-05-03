@@ -10,9 +10,9 @@ import { academicProfile, semester } from "@ams/db/schema/ams";
 import { ORPCError } from "@orpc/server";
 import { and, eq } from "drizzle-orm";
 import { z } from "zod";
-import { protectedProcedure } from "../index";
+import { o, protectedProcedure } from "../index";
 
-export const cgpaRouter = {
+export const cgpaRouter = o.router({
 	cgpaDashboard: protectedProcedure.handler(async ({ context }) => {
 		const userId = context.session.user.id;
 
@@ -271,4 +271,4 @@ export const cgpaRouter = {
 			remainingSemesters,
 		};
 	}),
-};
+});

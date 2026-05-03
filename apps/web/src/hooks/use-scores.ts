@@ -5,7 +5,7 @@ import { orpc } from "@/utils/orpc";
  * Hook to fetch the score for a specific subject
  */
 export function useScore(subjectId: string) {
-	return orpc.scoreGet.useQuery(
+	return orpc.score.scoreGet.useQuery(
 		{ subjectId },
 		{
 			enabled: !!subjectId,
@@ -19,11 +19,11 @@ export function useScore(subjectId: string) {
 export function useUpdateInternalMarks() {
 	const utils = orpc.useUtils();
 
-	return orpc.scoreUpdateInternal.useMutation({
+	return orpc.score.scoreUpdateInternal.useMutation({
 		onSuccess: (data) => {
 			toast.success("Internal marks updated");
 			if (data) {
-				utils.scoreGet.invalidate({ subjectId: data.subjectId });
+				utils.score.scoreGet.invalidate({ subjectId: data.subjectId });
 				// Also invalidate subject list as it might contain score data
 				utils.invalidate();
 			}
@@ -40,11 +40,11 @@ export function useUpdateInternalMarks() {
 export function useUpdateEndsemMarks() {
 	const utils = orpc.useUtils();
 
-	return orpc.scoreUpdateEndsem.useMutation({
+	return orpc.score.scoreUpdateEndsem.useMutation({
 		onSuccess: (data) => {
 			toast.success("End-semester marks updated");
 			if (data) {
-				utils.scoreGet.invalidate({ subjectId: data.subjectId });
+				utils.score.scoreGet.invalidate({ subjectId: data.subjectId });
 				// Also invalidate subject list and CGPA data
 				utils.invalidate();
 			}
