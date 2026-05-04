@@ -175,9 +175,7 @@ export const cgpaRouter = o.router({
 			});
 
 			if (!sem?.targetCGPA) {
-				throw new ORPCError("BAD_REQUEST", {
-					message: "Semester not found or no target CGPA set",
-				});
+				return null;
 			}
 
 			const targetCGPA = Number(sem.targetCGPA);
@@ -211,9 +209,7 @@ export const cgpaRouter = o.router({
 			});
 
 			if (!profile?.targetCumulativeCGPA) {
-				throw new ORPCError("BAD_REQUEST", {
-					message: "No cumulative target CGPA set",
-				});
+				return null;
 			}
 
 			const semesters = await db.query.semester.findMany({
