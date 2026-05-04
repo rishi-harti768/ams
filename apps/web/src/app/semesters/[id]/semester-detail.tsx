@@ -79,8 +79,13 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 					The semester you're looking for doesn't exist or you don't have
 					access.
 				</p>
-				<Button render={<Link href="/semesters" />} nativeButton={false} className="mt-6" variant="outline">
-						<ArrowLeft className="mr-2 h-4 w-4" /> Back to Semesters
+				<Button
+					className="mt-6"
+					nativeButton={false}
+					render={<Link href="/semesters" />}
+					variant="outline"
+				>
+					<ArrowLeft className="mr-2 h-4 w-4" /> Back to Semesters
 				</Button>
 			</div>
 		);
@@ -101,9 +106,9 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 			<div className="flex flex-col gap-6 border-b pb-8 md:flex-row md:items-end md:justify-between">
 				<div className="space-y-2">
 					<Button
-						render={<Link href="/semesters" />}
-						nativeButton={false}
 						className="-ml-2 h-8 text-muted-foreground"
+						nativeButton={false}
+						render={<Link href="/semesters" />}
 						size="sm"
 						variant="ghost"
 					>
@@ -172,12 +177,12 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 						</Card>
 					) : (
 						<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
-							{subjects.map((subject) => (
+							{subjects.map((subject: SemesterSubject) => (
 								<SubjectCard
 									deleteSubject={deleteSubject}
 									key={subject.id}
 									projection={projections?.find(
-										(p) => p.subjectId === subject.id
+										(p: { subjectId: string }) => p.subjectId === subject.id
 									)}
 									subject={subject}
 									updateEndsem={updateEndsem}
@@ -246,8 +251,11 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 											Active Credits
 										</span>
 										<span className="font-semibold">
-											{subjects?.reduce((sum, s) => sum + s.creditHours, 0) ||
-												0}
+											{subjects?.reduce(
+												(sum: number, s: SemesterSubject) =>
+													sum + s.creditHours,
+												0
+											) || 0}
 										</span>
 									</div>
 								</div>
@@ -291,8 +299,7 @@ interface Projection {
 interface SubjectCardProps {
 	deleteSubject: (val: { id: string }) => void;
 	projection?: Projection;
-	// biome-ignore lint/suspicious/noExplicitAny: Complex drizzle type with relations
-	subject: any;
+	subject: SemesterSubject;
 	updateEndsem: (val: {
 		subjectId: string;
 		endsemMarks: number | null;
@@ -414,6 +421,19 @@ function SubjectCard({
 			</CardContent>
 		</Card>
 	);
+}
+
+interface SemesterSubject {
+	creditHours: number;
+	id: string;
+	maxEndsemMarks: number;
+	maxInternalMarks: number;
+	name: string;
+	scores: {
+		endsemMarks: string | null;
+		gradePoint: string | null;
+		internalMarks: string | null;
+	}[];
 }
 
 function calculateSemesterCGPA(

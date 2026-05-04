@@ -13,70 +13,72 @@ import { z } from "zod";
 import { o, protectedProcedure } from "../index";
 
 export const cgpaRouter = o.router({
-	cgpaDashboard: protectedProcedure.handler(async ({ context }) => {
-		const userId = context.session.user.id;
+	cgpaDashboard: protectedProcedure
+		.input(z.object({}))
+		.handler(async ({ context }) => {
+			const userId = context.session.user.id;
 
-		const profile = await db.query.academicProfile.findFirst({
-			where: eq(academicProfile.userId, userId),
-		});
+			const profile = await db.query.academicProfile.findFirst({
+				where: eq(academicProfile.userId, userId),
+			});
 
-		const semesters = await db.query.semester.findMany({
-			where: eq(semester.userId, userId),
-			with: {
-				subjects: {
-					with: {
-						scores: true,
+			const semesters = await db.query.semester.findMany({
+				where: eq(semester.userId, userId),
+				with: {
+					subjects: {
+						with: {
+							scores: true,
+						},
 					},
 				},
-			},
-			orderBy: (semester, { desc }) => [desc(semester.createdAt)],
-		});
+				orderBy: (semester, { desc }) => [desc(semester.createdAt)],
+			});
 
-		const semesterData = semesters.map((sem) => {
-			const subjects = sem.subjects.map((sub) => ({
-				creditHours: sub.creditHours,
-				maxInternalMarks: sub.maxInternalMarks,
-				maxEndsemMarks: sub.maxEndsemMarks,
-				internalMarks: sub.scores[0]?.internalMarks
-					? Number(sub.scores[0].internalMarks)
-					: null,
-				endsemMarks: sub.scores[0]?.endsemMarks
-					? Number(sub.scores[0].endsemMarks)
-					: null,
-			}));
+			const semesterData = semesters.map((sem) => {
+				const subjects = sem.subjects.map((sub) => ({
+					creditHours: sub.creditHours,
+					maxInternalMarks: sub.maxInternalMarks,
+					maxEndsemMarks: sub.maxEndsemMarks,
+					internalMarks: sub.scores[0]?.internalMarks
+						? Number(sub.scores[0].internalMarks)
+						: null,
+					endsemMarks: sub.scores[0]?.endsemMarks
+						? Number(sub.scores[0].endsemMarks)
+						: null,
+				}));
 
-			const cgpa = calculateSemesterCGPA(subjects);
-			const totalCredits = sem.subjects.reduce(
-				(sum, s) => sum + s.creditHours,
-				0
+				const cgpa = calculateSemesterCGPA(subjects);
+				const totalCredits = sem.subjects.reduce(
+					(sum, s) => sum + s.creditHours,
+					0
+				);
+
+				return {
+					id: sem.id,
+					name: sem.name,
+					isActive: sem.isActive,
+					cgpa,
+					totalCredits,
+					targetCGPA: sem.targetCGPA ? Number(sem.targetCGPA) : null,
+				};
+			});
+
+			const currentCumulativeCGPA = calculateCumulativeCGPA(
+				semesterData.map((s) => ({
+					cgpa: s.cgpa,
+					totalCredits: s.totalCredits,
+				}))
 			);
 
+			const activeSemester = semesterData.find((s) => s.isActive);
+
 			return {
-				id: sem.id,
-				name: sem.name,
-				isActive: sem.isActive,
-				cgpa,
-				totalCredits,
-				targetCGPA: sem.targetCGPA ? Number(sem.targetCGPA) : null,
+				profile,
+				currentCumulativeCGPA,
+				semesters: semesterData,
+				activeSemester: activeSemester || null,
 			};
-		});
-
-		const currentCumulativeCGPA = calculateCumulativeCGPA(
-			semesterData.map((s) => ({
-				cgpa: s.cgpa,
-				totalCredits: s.totalCredits,
-			}))
-		);
-
-		const activeSemester = semesterData.find((s) => s.isActive);
-
-		return {
-			profile,
-			currentCumulativeCGPA,
-			semesters: semesterData,
-			activeSemester: activeSemester || null,
-		};
-	}),
+		}),
 
 	cgpaSemester: protectedProcedure
 		.input(z.object({ semesterId: z.string().uuid() }))
@@ -117,41 +119,43 @@ export const cgpaRouter = o.router({
 			return { cgpa };
 		}),
 
-	cgpaCumulative: protectedProcedure.handler(async ({ context }) => {
-		const semesters = await db.query.semester.findMany({
-			where: eq(semester.userId, context.session.user.id),
-			with: {
-				subjects: {
-					with: {
-						scores: true,
+	cgpaCumulative: protectedProcedure
+		.input(z.object({}))
+		.handler(async ({ context }) => {
+			const semesters = await db.query.semester.findMany({
+				where: eq(semester.userId, context.session.user.id),
+				with: {
+					subjects: {
+						with: {
+							scores: true,
+						},
 					},
 				},
-			},
-		});
+			});
 
-		const semesterData = semesters.map((sem) => {
-			const subjects = sem.subjects.map((sub) => ({
-				creditHours: sub.creditHours,
-				maxInternalMarks: sub.maxInternalMarks,
-				maxEndsemMarks: sub.maxEndsemMarks,
-				internalMarks: sub.scores[0]?.internalMarks
-					? Number(sub.scores[0].internalMarks)
-					: null,
-				endsemMarks: sub.scores[0]?.endsemMarks
-					? Number(sub.scores[0].endsemMarks)
-					: null,
-			}));
+			const semesterData = semesters.map((sem) => {
+				const subjects = sem.subjects.map((sub) => ({
+					creditHours: sub.creditHours,
+					maxInternalMarks: sub.maxInternalMarks,
+					maxEndsemMarks: sub.maxEndsemMarks,
+					internalMarks: sub.scores[0]?.internalMarks
+						? Number(sub.scores[0].internalMarks)
+						: null,
+					endsemMarks: sub.scores[0]?.endsemMarks
+						? Number(sub.scores[0].endsemMarks)
+						: null,
+				}));
+
+				return {
+					cgpa: calculateSemesterCGPA(subjects),
+					totalCredits: sem.subjects.reduce((sum, s) => sum + s.creditHours, 0),
+				};
+			});
 
 			return {
-				cgpa: calculateSemesterCGPA(subjects),
-				totalCredits: sem.subjects.reduce((sum, s) => sum + s.creditHours, 0),
+				cgpa: calculateCumulativeCGPA(semesterData),
 			};
-		});
-
-		return {
-			cgpa: calculateCumulativeCGPA(semesterData),
-		};
-	}),
+		}),
 
 	cgpaProjection: protectedProcedure
 		.input(z.object({ semesterId: z.string().uuid() }))
@@ -197,78 +201,80 @@ export const cgpaRouter = o.router({
 
 			return projections;
 		}),
-	cgpaCumulativeProjection: protectedProcedure.handler(async ({ context }) => {
-		const userId = context.session.user.id;
+	cgpaCumulativeProjection: protectedProcedure
+		.input(z.object({}))
+		.handler(async ({ context }) => {
+			const userId = context.session.user.id;
 
-		const profile = await db.query.academicProfile.findFirst({
-			where: eq(academicProfile.userId, userId),
-		});
-
-		if (!profile?.targetCumulativeCGPA) {
-			throw new ORPCError("BAD_REQUEST", {
-				message: "No cumulative target CGPA set",
+			const profile = await db.query.academicProfile.findFirst({
+				where: eq(academicProfile.userId, userId),
 			});
-		}
 
-		const semesters = await db.query.semester.findMany({
-			where: eq(semester.userId, userId),
-			with: {
-				subjects: {
-					with: {
-						scores: true,
+			if (!profile?.targetCumulativeCGPA) {
+				throw new ORPCError("BAD_REQUEST", {
+					message: "No cumulative target CGPA set",
+				});
+			}
+
+			const semesters = await db.query.semester.findMany({
+				where: eq(semester.userId, userId),
+				with: {
+					subjects: {
+						with: {
+							scores: true,
+						},
 					},
 				},
-			},
-		});
+			});
 
-		const semesterData = semesters.map((sem) => {
-			const subjects = sem.subjects.map((sub) => ({
-				creditHours: sub.creditHours,
-				maxInternalMarks: sub.maxInternalMarks,
-				maxEndsemMarks: sub.maxEndsemMarks,
-				internalMarks: sub.scores[0]?.internalMarks
-					? Number(sub.scores[0].internalMarks)
-					: null,
-				endsemMarks: sub.scores[0]?.endsemMarks
-					? Number(sub.scores[0].endsemMarks)
-					: null,
-			}));
+			const semesterData = semesters.map((sem) => {
+				const subjects = sem.subjects.map((sub) => ({
+					creditHours: sub.creditHours,
+					maxInternalMarks: sub.maxInternalMarks,
+					maxEndsemMarks: sub.maxEndsemMarks,
+					internalMarks: sub.scores[0]?.internalMarks
+						? Number(sub.scores[0].internalMarks)
+						: null,
+					endsemMarks: sub.scores[0]?.endsemMarks
+						? Number(sub.scores[0].endsemMarks)
+						: null,
+				}));
+
+				return {
+					cgpa: calculateSemesterCGPA(subjects),
+					totalCredits: sem.subjects.reduce((sum, s) => sum + s.creditHours, 0),
+				};
+			});
+
+			const currentCumulativeCGPA = calculateCumulativeCGPA(semesterData);
+			const currentTotalCredits = semesterData.reduce(
+				(sum, s) => sum + s.totalCredits,
+				0
+			);
+
+			const remainingSemesters =
+				profile.totalSemesters - profile.currentSemester + 1;
+
+			// Estimate average credits per semester from existing ones, or default to 20
+			const averageCredits =
+				semesterData.length > 0
+					? semesterData.reduce((sum, s) => sum + s.totalCredits, 0) /
+						semesterData.length
+					: 20;
+
+			const projection = calculateRequiredSemesterCGPA(
+				currentCumulativeCGPA,
+				currentTotalCredits,
+				Number(profile.targetCumulativeCGPA),
+				Math.max(1, remainingSemesters),
+				averageCredits
+			);
 
 			return {
-				cgpa: calculateSemesterCGPA(subjects),
-				totalCredits: sem.subjects.reduce((sum, s) => sum + s.creditHours, 0),
+				...projection,
+				currentCumulativeCGPA,
+				targetCumulativeCGPA: Number(profile.targetCumulativeCGPA),
+				remainingSemesters,
 			};
-		});
-
-		const currentCumulativeCGPA = calculateCumulativeCGPA(semesterData);
-		const currentTotalCredits = semesterData.reduce(
-			(sum, s) => sum + s.totalCredits,
-			0
-		);
-
-		const remainingSemesters =
-			profile.totalSemesters - profile.currentSemester + 1;
-
-		// Estimate average credits per semester from existing ones, or default to 20
-		const averageCredits =
-			semesterData.length > 0
-				? semesterData.reduce((sum, s) => sum + s.totalCredits, 0) /
-					semesterData.length
-				: 20;
-
-		const projection = calculateRequiredSemesterCGPA(
-			currentCumulativeCGPA,
-			currentTotalCredits,
-			Number(profile.targetCumulativeCGPA),
-			Math.max(1, remainingSemesters),
-			averageCredits
-		);
-
-		return {
-			...projection,
-			currentCumulativeCGPA,
-			targetCumulativeCGPA: Number(profile.targetCumulativeCGPA),
-			remainingSemesters,
-		};
-	}),
+		}),
 });

@@ -80,7 +80,7 @@ export default function Settings() {
 												institutionType: profile.institutionType as
 													| "school"
 													| "college",
-												institutionName: profile.institutionName,
+												institutionName: profile.institutionName ?? undefined,
 												currentSemester: profile.currentSemester,
 												totalSemesters: profile.totalSemesters,
 												targetCumulativeCGPA: Number(

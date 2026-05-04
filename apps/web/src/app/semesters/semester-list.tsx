@@ -76,9 +76,9 @@ export default function SemesterList() {
 					</p>
 				</div>
 				<Dialog onOpenChange={setIsOpen} open={isOpen}>
-				<DialogTrigger render={<Button />}>
+					<DialogTrigger render={<Button />}>
 						<Plus className="mr-2 h-4 w-4" /> Add Semester
-				</DialogTrigger>
+					</DialogTrigger>
 					<DialogContent className="sm:max-w-[425px]">
 						<DialogHeader>
 							<DialogTitle>Add New Semester</DialogTitle>
@@ -108,7 +108,7 @@ export default function SemesterList() {
 				</Card>
 			) : (
 				<div className="grid grid-cols-1 gap-6 md:grid-cols-2 xl:grid-cols-3">
-					{semesters.map((semester) => (
+					{semesters.map((semester: SemesterSummary) => (
 						<Card
 							className={cn(
 								"relative transition-all hover:shadow-md",
@@ -133,8 +133,16 @@ export default function SemesterList() {
 										</CardDescription>
 									</div>
 									<DropdownMenu>
-										<DropdownMenuTrigger render={<Button className="h-8 w-8" size="icon" variant="ghost" />}>
-												<MoreVertical className="h-4 w-4" />
+										<DropdownMenuTrigger
+											render={
+												<Button
+													className="h-8 w-8"
+													size="icon"
+													variant="ghost"
+												/>
+											}
+										>
+											<MoreVertical className="h-4 w-4" />
 										</DropdownMenuTrigger>
 										<DropdownMenuContent align="end">
 											<DropdownMenuItem
@@ -176,8 +184,13 @@ export default function SemesterList() {
 								</div>
 							</CardContent>
 							<CardFooter className="pt-0">
-								<Button render={<Link href={`/semesters/${semester.id}`} />} nativeButton={false} className="w-full" variant="outline">
-										View Details <ExternalLink className="ml-2 h-4 w-4" />
+								<Button
+									className="w-full"
+									nativeButton={false}
+									render={<Link href={`/semesters/${semester.id}`} />}
+									variant="outline"
+								>
+									View Details <ExternalLink className="ml-2 h-4 w-4" />
 								</Button>
 							</CardFooter>
 						</Card>
@@ -186,6 +199,14 @@ export default function SemesterList() {
 			)}
 		</div>
 	);
+}
+
+interface SemesterSummary {
+	academicYear: string | null;
+	id: string;
+	isActive: boolean;
+	name: string;
+	targetCGPA: string | null;
 }
 
 function SemesterListSkeleton() {

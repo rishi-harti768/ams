@@ -5,12 +5,14 @@ import { z } from "zod";
 import { o, protectedProcedure } from "../index";
 
 export const profileRouter = o.router({
-	profile: protectedProcedure.handler(async ({ context }) => {
-		const profile = await db.query.academicProfile.findFirst({
-			where: eq(academicProfile.userId, context.session.user.id),
-		});
-		return profile;
-	}),
+	profile: protectedProcedure
+		.input(z.object({}))
+		.handler(async ({ context }) => {
+			const profile = await db.query.academicProfile.findFirst({
+				where: eq(academicProfile.userId, context.session.user.id),
+			});
+			return profile;
+		}),
 
 	profileCreate: protectedProcedure
 		.input(

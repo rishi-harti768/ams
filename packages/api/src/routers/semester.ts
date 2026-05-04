@@ -5,13 +5,15 @@ import { z } from "zod";
 import { o, protectedProcedure } from "../index";
 
 export const semesterRouter = o.router({
-	semesterList: protectedProcedure.handler(async ({ context }) => {
-		const semesters = await db.query.semester.findMany({
-			where: eq(semester.userId, context.session.user.id),
-			orderBy: [desc(semester.createdAt)],
-		});
-		return semesters;
-	}),
+	semesterList: protectedProcedure
+		.input(z.object({}))
+		.handler(async ({ context }) => {
+			const semesters = await db.query.semester.findMany({
+				where: eq(semester.userId, context.session.user.id),
+				orderBy: [desc(semester.createdAt)],
+			});
+			return semesters;
+		}),
 
 	semesterGet: protectedProcedure
 		.input(z.object({ id: z.string().uuid() }))

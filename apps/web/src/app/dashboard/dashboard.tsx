@@ -1,4 +1,4 @@
-"use client";
+﻿"use client";
 
 import { Button } from "@ams/ui/components/button";
 import {
@@ -20,6 +20,7 @@ import {
 	Trophy,
 } from "lucide-react";
 import Link from "next/link";
+
 import {
 	useCGPAProjection,
 	useCumulativeCGPAProjection,
@@ -47,7 +48,11 @@ export default function Dashboard() {
 					Start by adding your first semester to begin tracking your
 					performance.
 				</p>
-				<Button render={<Link href="/semesters" />} nativeButton={false} className="mt-6">
+				<Button
+					className="mt-6"
+					nativeButton={false}
+					render={<Link href="/semesters" />}
+				>
 					Get Started
 				</Button>
 			</div>
@@ -66,7 +71,6 @@ export default function Dashboard() {
 			<div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
 				<CGPACard
 					description="Your overall academic standing"
-					status="neutral"
 					target={targetCumulative}
 					title="Cumulative CGPA"
 					value={currentCumulativeCGPA || "N/A"}
@@ -161,14 +165,21 @@ export default function Dashboard() {
 									{activeSemester?.name || "No active semester set"}
 								</CardDescription>
 							</div>
-							<Button render={<Link
-									href={
-										activeSemester
-											? `/semesters/${activeSemester.id}`
-											: "/semesters"
-									}
-								/>} nativeButton={false} size="icon" variant="ghost">
-									<ArrowRight className="h-4 w-4" />
+							<Button
+								nativeButton={false}
+								render={
+									<Link
+										href={
+											activeSemester
+												? `/semesters/${activeSemester.id}`
+												: "/semesters"
+										}
+									/>
+								}
+								size="icon"
+								variant="ghost"
+							>
+								<ArrowRight className="h-4 w-4" />
 							</Button>
 						</CardHeader>
 						<CardContent>
@@ -205,7 +216,7 @@ export default function Dashboard() {
 														key={subject.subjectId}
 													>
 														<div className="flex flex-col">
-															<span className="max-w-[120px] truncate font-medium">
+															<span className="max-w-30 truncate font-medium">
 																{subject.name}
 															</span>
 															<span className="text-[10px] text-muted-foreground">
@@ -237,12 +248,14 @@ export default function Dashboard() {
 												))}
 												{projectionData.length > 4 && (
 													<Button
-														render={<Link href={`/semesters/${activeSemester.id}`} />}
-														nativeButton={false}
 														className="w-full text-xs"
+														nativeButton={false}
+														render={
+															<Link href={`/semesters/${activeSemester.id}`} />
+														}
 														variant="ghost"
 													>
-															View all {projectionData.length} subjects
+														View all {projectionData.length} subjects
 													</Button>
 												)}
 											</div>
@@ -257,7 +270,7 @@ export default function Dashboard() {
 									</div>
 								</div>
 							) : (
-								<div className="flex h-[200px] flex-col items-center justify-center text-center">
+								<div className="flex h-50 flex-col items-center justify-center text-center">
 									<Calculator className="h-8 w-8 text-muted-foreground opacity-20" />
 									<p className="mt-2 text-muted-foreground text-sm">
 										Set a semester as active to see breakdown
@@ -281,8 +294,8 @@ function DashboardSkeleton() {
 				))}
 			</div>
 			<div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-				<Skeleton className="h-[400px] rounded-xl lg:col-span-2" />
-				<Skeleton className="h-[400px] rounded-xl lg:col-span-1" />
+				<Skeleton className="h-100 rounded-xl lg:col-span-2" />
+				<Skeleton className="h-100 rounded-xl lg:col-span-1" />
 			</div>
 		</div>
 	);

@@ -1,3 +1,4 @@
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { toast } from "sonner";
 import { orpc } from "@/utils/orpc";
 
@@ -5,11 +6,11 @@ import { orpc } from "@/utils/orpc";
  * Hook to fetch all subjects for a specific semester
  */
 export function useSubjects(semesterId: string) {
-	return orpc.subject.subjectList.useQuery(
-		{ semesterId },
-		{
+	return useQuery(
+		orpc.subject.subjectList.queryOptions({
+			input: { semesterId },
 			enabled: !!semesterId,
-		}
+		})
 	);
 }
 
@@ -17,58 +18,88 @@ export function useSubjects(semesterId: string) {
  * Hook to create a new subject
  */
 export function useCreateSubject() {
-	const utils = orpc.useUtils();
+	const queryClient = useQueryClient();
 
-	return orpc.subject.subjectCreate.useMutation({
-		onSuccess: (data) => {
-			toast.success("Subject added successfully");
-			if (data) {
-				utils.subject.subjectList.invalidate({ semesterId: data.semesterId });
-				utils.semester.semesterGet.invalidate({ id: data.semesterId });
-			}
-		},
-		onError: (error) => {
-			toast.error(`Failed to add subject: ${error.message}`);
-		},
-	});
+	return useMutation(
+		orpc.subject.subjectCreate.mutationOptions({
+			onSuccess: (data) => {
+				toast.success("Subject added successfully");
+				if (data) {
+					queryClient.invalidateQueries({
+						queryKey: orpc.subject.subjectList.queryKey({
+							input: { semesterId: data.semesterId },
+						}),
+					});
+					queryClient.invalidateQueries({
+						queryKey: orpc.semester.semesterGet.queryKey({
+							input: { id: data.semesterId },
+						}),
+					});
+				}
+			},
+			onError: (error) => {
+				toast.error(`Failed to add subject: ${error.message}`);
+			},
+		})
+	);
 }
 
 /**
  * Hook to update an existing subject
  */
 export function useUpdateSubject() {
-	const utils = orpc.useUtils();
+	const queryClient = useQueryClient();
 
-	return orpc.subject.subjectUpdate.useMutation({
-		onSuccess: (data) => {
-			toast.success("Subject updated successfully");
-			if (data) {
-				utils.subject.subjectList.invalidate({ semesterId: data.semesterId });
-				utils.semester.semesterGet.invalidate({ id: data.semesterId });
-			}
-		},
-		onError: (error) => {
-			toast.error(`Failed to update subject: ${error.message}`);
-		},
-	});
+	return useMutation(
+		orpc.subject.subjectUpdate.mutationOptions({
+			onSuccess: (data) => {
+				toast.success("Subject updated successfully");
+				if (data) {
+					queryClient.invalidateQueries({
+						queryKey: orpc.subject.subjectList.queryKey({
+							input: { semesterId: data.semesterId },
+						}),
+					});
+					queryClient.invalidateQueries({
+						queryKey: orpc.semester.semesterGet.queryKey({
+							input: { id: data.semesterId },
+						}),
+					});
+				}
+			},
+			onError: (error) => {
+				toast.error(`Failed to update subject: ${error.message}`);
+			},
+		})
+	);
 }
 
 /**
  * Hook to delete a subject
  */
 export function useDeleteSubject() {
-	const utils = orpc.useUtils();
+	const queryClient = useQueryClient();
 
-	return orpc.subject.subjectDelete.useMutation({
-		onSuccess: (data) => {
-			toast.success("Subject deleted successfully");
-			if (data) {
-				utils.subject.subjectList.invalidate({ semesterId: data.semesterId });
-				utils.semester.semesterGet.invalidate({ id: data.semesterId });
-			}
-		},
-		onError: (error) => {
-			toast.error(`Failed to delete subject: ${error.message}`);
-		},
-	});
+	return useMutation(
+		orpc.subject.subjectDelete.mutationOptions({
+			onSuccess: (data) => {
+				toast.success("Subject deleted successfully");
+				if (data) {
+					queryClient.invalidateQueries({
+						queryKey: orpc.subject.subjectList.queryKey({
+							input: { semesterId: data.semesterId },
+						}),
+					});
+					queryClient.invalidateQueries({
+						queryKey: orpc.semester.semesterGet.queryKey({
+							input: { id: data.semesterId },
+						}),
+					});
+				}
+			},
+			onError: (error) => {
+				toast.error(`Failed to delete subject: ${error.message}`);
+			},
+		})
+	);
 }
