@@ -128,3 +128,31 @@
 		@apply font-sans;
 	}
 }
+
+/* Icon System */
+[data-icon] {
+	--icon-size: 1.25em;
+	flex-shrink: 0;
+	width: var(--icon-size);
+	height: var(--icon-size);
+}
+
+[data-icon="inline"] {
+	display: inline-block;
+	margin-top: -0.1em;
+	vertical-align: middle;
+}
+
+[data-icon="inline-start"] {
+	display: inline-block;
+	margin-inline-end: 0.5em;
+	margin-top: -0.1em;
+	vertical-align: middle;
+}
+
+[data-icon="inline-end"] {
+	display: inline-block;
+	margin-inline-start: 0.5em;
+	margin-top: -0.1em;
+	vertical-align: middle;
+}

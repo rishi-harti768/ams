@@ -67,9 +67,9 @@ export default function SemesterList() {
 	}
 
 	return (
-		<div className="space-y-6">
+		<div className="flex flex-col gap-6">
 			<div className="flex items-center justify-between">
-				<div>
+				<div className="flex flex-col gap-1">
 					<h1 className="font-bold text-3xl tracking-tight">Semesters</h1>
 					<p className="text-muted-foreground">
 						Manage your academic terms and track progress.
@@ -77,7 +77,7 @@ export default function SemesterList() {
 				</div>
 				<Dialog onOpenChange={setIsOpen} open={isOpen}>
 					<DialogTrigger render={<Button />}>
-						<Plus className="mr-2 h-4 w-4" /> Add Semester
+						<Plus data-icon="inline-start" /> Add Semester
 					</DialogTrigger>
 					<DialogContent className="sm:max-w-[425px]">
 						<DialogHeader>
@@ -98,7 +98,7 @@ export default function SemesterList() {
 			{!semesters || semesters.length === 0 ? (
 				<Card className="flex flex-col items-center justify-center border-dashed p-12 text-center">
 					<div className="mb-4 rounded-full bg-muted p-4">
-						<Calendar className="h-8 w-8 text-muted-foreground" />
+						<Calendar data-icon="inline" />
 					</div>
 					<h3 className="font-semibold text-xl">No semesters found</h3>
 					<p className="mt-2 max-w-xs text-muted-foreground">
@@ -112,23 +112,23 @@ export default function SemesterList() {
 						<Card
 							className={cn(
 								"relative transition-all hover:shadow-md",
-								semester.isActive && "border-primary ring-1 ring-primary/20"
+								semester.isActive ? "border-primary ring-1 ring-primary/20" : ""
 							)}
 							key={semester.id}
 						>
 							<CardHeader className="pb-3">
 								<div className="flex items-start justify-between">
-									<div className="space-y-1">
+									<div className="flex flex-col gap-1">
 										<div className="flex items-center gap-2">
 											<CardTitle className="text-xl">{semester.name}</CardTitle>
-											{semester.isActive && (
+											{semester.isActive ? (
 												<Badge className="border-primary/20 bg-primary/10 text-primary hover:bg-primary/20">
 													Active
 												</Badge>
-											)}
+											) : null}
 										</div>
 										<CardDescription className="flex items-center gap-1.5">
-											<Calendar className="h-3 w-3" />
+											<Calendar data-icon="inline-start" />
 											{semester.academicYear || "Year not set"}
 										</CardDescription>
 									</div>
@@ -142,19 +142,19 @@ export default function SemesterList() {
 												/>
 											}
 										>
-											<MoreVertical className="h-4 w-4" />
+											<MoreVertical data-icon="inline" />
 										</DropdownMenuTrigger>
 										<DropdownMenuContent align="end">
 											<DropdownMenuItem
 												onClick={() => setActive({ id: semester.id })}
 											>
-												<CheckCircle2 className="mr-2 h-4 w-4" /> Set as Active
+												<CheckCircle2 data-icon="inline-start" /> Set as Active
 											</DropdownMenuItem>
 											<DropdownMenuItem
 												className="text-destructive focus:text-destructive"
 												onClick={() => deleteSemester({ id: semester.id })}
 											>
-												<Trash2 className="mr-2 h-4 w-4" /> Delete
+												<Trash2 data-icon="inline-start" /> Delete
 											</DropdownMenuItem>
 										</DropdownMenuContent>
 									</DropdownMenu>
@@ -162,7 +162,7 @@ export default function SemesterList() {
 							</CardHeader>
 							<CardContent>
 								<div className="flex items-center justify-between rounded-lg bg-muted/30 p-4">
-									<div className="space-y-0.5">
+									<div className="flex flex-col gap-0.5">
 										<p className="font-bold text-[10px] text-muted-foreground uppercase tracking-wider">
 											Target CGPA
 										</p>
@@ -173,7 +173,7 @@ export default function SemesterList() {
 										</p>
 									</div>
 									<div className="h-8 w-[1px] bg-border" />
-									<div className="space-y-0.5 text-right">
+									<div className="flex flex-col gap-0.5 text-right">
 										<p className="font-bold text-[10px] text-muted-foreground uppercase tracking-wider">
 											Status
 										</p>
@@ -190,7 +190,7 @@ export default function SemesterList() {
 									render={<Link href={`/semesters/${semester.id}`} />}
 									variant="outline"
 								>
-									View Details <ExternalLink className="ml-2 h-4 w-4" />
+									View Details <ExternalLink data-icon="inline-end" />
 								</Button>
 							</CardFooter>
 						</Card>
@@ -211,9 +211,9 @@ interface SemesterSummary {
 
 function SemesterListSkeleton() {
 	return (
-		<div className="space-y-6">
+		<div className="flex flex-col gap-6">
 			<div className="flex items-center justify-between">
-				<div className="space-y-2">
+				<div className="flex flex-col gap-2">
 					<Skeleton className="h-10 w-48" />
 					<Skeleton className="h-4 w-64" />
 				</div>

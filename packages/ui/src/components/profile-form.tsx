@@ -109,7 +109,7 @@ export function ProfileForm({
 								name={field.name}
 								onBlur={field.handleBlur}
 								onChange={(e) => field.handleChange(e.target.value)}
-								placeholder="e.g. Stanford University"
+								placeholder="e.g. Stanford University…"
 								value={field.state.value}
 							/>
 						</div>
@@ -275,7 +275,7 @@ export function ProfileForm({
 				disabled={isLoading}
 				type="submit"
 			>
-				{isLoading ? "Saving Profile..." : "Complete Setup"}
+				{isLoading ? "Saving Profile…" : "Complete Setup"}
 			</Button>
 		</form>
 	);

@@ -1,4 +1,5 @@
 "use client";
+import { Separator } from "@ams/ui/components/separator";
 import Link from "next/link";
 
 import { ModeToggle } from "./mode-toggle";
@@ -27,7 +28,7 @@ export default function Header() {
 					<UserMenu />
 				</div>
 			</div>
-			<hr />
+			<Separator />
 		</div>
 	);
 }

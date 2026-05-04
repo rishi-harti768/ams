@@ -101,10 +101,10 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 	};
 
 	return (
-		<div className="fade-in animate-in space-y-8 duration-500">
+		<div className="fade-in flex animate-in flex-col gap-8 duration-500">
 			{/* Header Section */}
 			<div className="flex flex-col gap-6 border-b pb-8 md:flex-row md:items-end md:justify-between">
-				<div className="space-y-2">
+				<div className="flex flex-col gap-2">
 					<Button
 						className="-ml-2 h-8 text-muted-foreground"
 						nativeButton={false}
@@ -112,17 +112,17 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 						size="sm"
 						variant="ghost"
 					>
-						<ArrowLeft className="mr-2 h-4 w-4" /> Back to Semesters
+						<ArrowLeft data-icon="inline-start" /> Back to Semesters
 					</Button>
 					<div className="flex items-center gap-3">
 						<h1 className="font-bold text-4xl tracking-tight">
 							{semester.name}
 						</h1>
-						{semester.isActive && (
+						{semester.isActive ? (
 							<Badge className="h-6 border-primary/20 bg-primary/10 text-primary hover:bg-primary/20">
 								Active
 							</Badge>
-						)}
+						) : null}
 					</div>
 					<p className="text-muted-foreground">
 						{semester.academicYear || "No academic year set"}
@@ -144,7 +144,7 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 					</Card>
 					<Dialog onOpenChange={setIsAddSubjectOpen} open={isAddSubjectOpen}>
 						<DialogTrigger render={<Button className="h-12 px-6" />}>
-							<Plus className="mr-2 h-4 w-4" /> Add Subject
+							<Plus data-icon="inline-start" /> Add Subject
 						</DialogTrigger>
 						<DialogContent>
 							<DialogHeader>
@@ -166,10 +166,13 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 			{/* Content Grid */}
 			<div className="grid grid-cols-1 gap-8 lg:grid-cols-4">
 				{/* Main Subjects List */}
-				<div className="space-y-6 lg:col-span-3">
+				<div className="flex flex-col gap-6 lg:col-span-3">
 					{!subjects || subjects.length === 0 ? (
 						<Card className="border-dashed py-20 text-center">
-							<Calculator className="mx-auto mb-4 h-12 w-12 text-muted-foreground opacity-20" />
+							<Calculator
+								className="mx-auto mb-4 text-muted-foreground opacity-20"
+								data-icon="inline"
+							/>
 							<h3 className="font-semibold text-lg">No subjects added yet</h3>
 							<p className="mt-1 text-muted-foreground">
 								Add your subjects to start tracking scores.
@@ -194,18 +197,18 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 				</div>
 
 				{/* Sidebar / Stats */}
-				<div className="space-y-6">
+				<div className="flex flex-col gap-6">
 					<Card className="overflow-hidden border-primary/20 shadow-sm">
 						<CardHeader className="bg-primary/5 pb-4">
 							<div className="flex items-center gap-2">
-								<Target className="size-4 text-primary" />
+								<Target className="text-primary" data-icon="inline-start" />
 								<CardTitle className="text-sm uppercase tracking-wider">
 									Targets & Goals
 								</CardTitle>
 							</div>
 						</CardHeader>
-						<CardContent className="space-y-6 pt-6">
-							<div className="space-y-1.5">
+						<CardContent className="flex flex-col gap-6 pt-6">
+							<div className="flex flex-col gap-1.5">
 								<div className="flex items-center justify-between font-medium text-muted-foreground text-xs uppercase tracking-wider">
 									<span>Semester Goal</span>
 									<span className="text-foreground">
@@ -226,12 +229,15 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 
 							<div className="pt-2">
 								<div className="mb-3 flex items-center gap-2">
-									<TrendingUp className="size-4 text-emerald-500" />
+									<TrendingUp
+										className="text-emerald-500"
+										data-icon="inline-start"
+									/>
 									<span className="font-bold text-xs uppercase tracking-wider">
 										Performance Index
 									</span>
 								</div>
-								<div className="space-y-3">
+								<div className="flex flex-col gap-3">
 									<div className="flex items-center justify-between text-sm">
 										<span className="text-muted-foreground">Completion</span>
 										<span className="font-semibold">
@@ -269,9 +275,12 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 						</CardFooter>
 					</Card>
 
-					{semester.isActive && (
+					{semester.isActive ? (
 						<div className="flex gap-4 rounded-xl border border-emerald-100 bg-emerald-50 p-5">
-							<CheckCircle2 className="size-6 shrink-0 text-emerald-500" />
+							<CheckCircle2
+								className="shrink-0 text-emerald-500"
+								data-icon="inline-start"
+							/>
 							<div>
 								<h4 className="font-bold text-emerald-900 text-sm">
 									Current Semester
@@ -282,7 +291,7 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 								</p>
 							</div>
 						</div>
-					)}
+					) : null}
 				</div>
 			</div>
 		</div>
@@ -324,8 +333,8 @@ function SubjectCard({
 			className="group relative overflow-hidden border-slate-200/60 transition-all hover:shadow-lg"
 			key={subject.id}
 		>
-			<CardHeader className="flex flex-row items-start justify-between space-y-0 pb-3">
-				<div className="space-y-1">
+			<CardHeader className="flex flex-row items-start justify-between gap-0 pb-3">
+				<div className="flex flex-col gap-1">
 					<CardTitle className="text-lg leading-tight transition-colors group-hover:text-primary">
 						{subject.name}
 					</CardTitle>
@@ -339,10 +348,10 @@ function SubjectCard({
 					size="icon"
 					variant="ghost"
 				>
-					<Trash2 className="h-4 w-4" />
+					<Trash2 data-icon="inline" />
 				</Button>
 			</CardHeader>
-			<CardContent className="space-y-6">
+			<CardContent className="flex flex-col gap-6">
 				<div className="grid grid-cols-2 gap-4">
 					<ScoreInput
 						label="Internal"
@@ -393,7 +402,7 @@ function SubjectCard({
 						</div>
 					</div>
 
-					{projection && !score?.endsemMarks && (
+					{projection && !score?.endsemMarks ? (
 						<div className="text-right">
 							<p className="font-bold text-[10px] text-primary/70 uppercase tracking-wider">
 								Target Need
@@ -416,7 +425,7 @@ function SubjectCard({
 								)}
 							</div>
 						</div>
-					)}
+					) : null}
 				</div>
 			</CardContent>
 		</Card>
@@ -492,8 +501,8 @@ function getGradeLabel(gp: number) {
 
 function SemesterDetailSkeleton() {
 	return (
-		<div className="space-y-8">
-			<div className="space-y-4 border-b pb-8">
+		<div className="flex flex-col gap-8">
+			<div className="flex flex-col gap-4 border-b pb-8">
 				<Skeleton className="h-6 w-32" />
 				<div className="flex items-end justify-between">
 					<Skeleton className="h-12 w-64" />

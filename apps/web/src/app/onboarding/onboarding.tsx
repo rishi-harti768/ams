@@ -40,11 +40,11 @@ export default function Onboarding() {
 		return (
 			<div className="flex min-h-screen items-center justify-center p-4">
 				<Card className="w-full max-w-md">
-					<CardHeader className="space-y-2">
+					<CardHeader className="flex flex-col gap-2">
 						<Skeleton className="h-8 w-3/4" />
 						<Skeleton className="h-4 w-full" />
 					</CardHeader>
-					<CardContent className="space-y-4">
+					<CardContent className="flex flex-col gap-4">
 						<Skeleton className="h-10 w-full" />
 						<Skeleton className="h-10 w-full" />
 						<Skeleton className="h-10 w-full" />
@@ -58,7 +58,7 @@ export default function Onboarding() {
 	return (
 		<div className="flex min-h-screen items-center justify-center bg-slate-50/50 p-4">
 			<Card className="w-full max-w-md border-slate-200/60 shadow-xl">
-				<CardHeader className="space-y-1 pb-6">
+				<CardHeader className="flex flex-col gap-1 pb-6">
 					<CardTitle className="font-bold text-2xl tracking-tight">
 						Welcome to AMS
 					</CardTitle>

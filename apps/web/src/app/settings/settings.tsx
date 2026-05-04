@@ -39,32 +39,32 @@ export default function Settings() {
 	}
 
 	return (
-		<div className="fade-in mx-auto max-w-4xl animate-in space-y-8 duration-500">
-			<div className="space-y-1">
+		<div className="fade-in mx-auto flex max-w-4xl animate-in flex-col gap-8 duration-500">
+			<div className="flex flex-col gap-1">
 				<h1 className="font-bold text-3xl tracking-tight">Settings</h1>
 				<p className="text-muted-foreground">
 					Manage your account and academic preferences.
 				</p>
 			</div>
 
-			<Tabs className="space-y-6" defaultValue="academic">
+			<Tabs className="flex flex-col gap-6" defaultValue="academic">
 				<TabsList className="bg-muted/50 p-1">
 					<TabsTrigger className="gap-2" value="academic">
-						<GraduationCap className="h-4 w-4" /> Academic Profile
+						<GraduationCap data-icon="inline" /> Academic Profile
 					</TabsTrigger>
 					<TabsTrigger className="gap-2" value="account">
-						<User className="h-4 w-4" /> Account
+						<User data-icon="inline" /> Account
 					</TabsTrigger>
 					<TabsTrigger className="gap-2" value="security">
-						<ShieldCheck className="h-4 w-4" /> Security
+						<ShieldCheck data-icon="inline" /> Security
 					</TabsTrigger>
 				</TabsList>
 
-				<TabsContent className="space-y-6" value="academic">
+				<TabsContent className="flex flex-col gap-6" value="academic">
 					<Card className="border-slate-200/60 shadow-sm">
 						<CardHeader className="pb-4">
 							<div className="flex items-center gap-2">
-								<Settings2 className="h-5 w-5 text-primary" />
+								<Settings2 className="text-primary" data-icon="inline-start" />
 								<CardTitle>Academic Configuration</CardTitle>
 							</div>
 							<CardDescription>
@@ -105,7 +105,10 @@ export default function Settings() {
 							</CardDescription>
 						</CardHeader>
 						<CardContent className="py-20 text-center">
-							<User className="mx-auto mb-4 h-12 w-12 text-muted-foreground opacity-20" />
+							<User
+								className="mx-auto mb-4 text-muted-foreground opacity-20"
+								data-icon="inline"
+							/>
 							<p className="text-muted-foreground">
 								Account management features coming soon.
 							</p>
@@ -122,7 +125,10 @@ export default function Settings() {
 							</CardDescription>
 						</CardHeader>
 						<CardContent className="py-20 text-center">
-							<ShieldCheck className="mx-auto mb-4 h-12 w-12 text-muted-foreground opacity-20" />
+							<ShieldCheck
+								className="mx-auto mb-4 text-muted-foreground opacity-20"
+								data-icon="inline"
+							/>
 							<p className="text-muted-foreground">
 								Security settings are managed via Better Auth.
 							</p>
@@ -136,8 +142,8 @@ export default function Settings() {
 
 function SettingsSkeleton() {
 	return (
-		<div className="mx-auto max-w-4xl space-y-8">
-			<div className="space-y-2">
+		<div className="mx-auto flex max-w-4xl flex-col gap-8">
+			<div className="flex flex-col gap-2">
 				<Skeleton className="h-10 w-48" />
 				<Skeleton className="h-4 w-64" />
 			</div>
@@ -147,7 +153,7 @@ function SettingsSkeleton() {
 					<Skeleton className="mb-2 h-8 w-3/4" />
 					<Skeleton className="h-4 w-full" />
 				</CardHeader>
-				<CardContent className="space-y-6">
+				<CardContent className="flex flex-col gap-6">
 					<Skeleton className="h-10 w-full" />
 					<Skeleton className="h-10 w-full" />
 					<Skeleton className="h-10 w-full" />
