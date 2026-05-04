@@ -5,12 +5,14 @@ import { z } from "zod";
 import { o, protectedProcedure } from "../index";
 
 export const profileRouter = o.router({
-	profile: protectedProcedure.handler(async ({ context }) => {
-		const profile = await db.query.academicProfile.findFirst({
-			where: eq(academicProfile.userId, context.session.user.id),
-		});
-		return profile;
-	}),
+	profile: protectedProcedure
+		.input(z.object({}))
+		.handler(async ({ context }) => {
+			const profile = await db.query.academicProfile.findFirst({
+				where: eq(academicProfile.userId, context.session.user.id),
+			});
+			return profile ?? null;
+		}),
 
 	profileCreate: protectedProcedure
 		.input(
@@ -34,7 +36,7 @@ export const profileRouter = o.router({
 					targetCumulativeCGPA: input.targetCumulativeCGPA?.toString(),
 				})
 				.returning();
-			return newProfile;
+			return newProfile ?? null;
 		}),
 
 	profileUpdate: protectedProcedure
@@ -69,6 +71,6 @@ export const profileRouter = o.router({
 				})
 				.where(eq(academicProfile.userId, context.session.user.id))
 				.returning();
-			return updatedProfile;
+			return updatedProfile ?? null;
 		}),
 });

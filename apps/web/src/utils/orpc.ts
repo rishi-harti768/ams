@@ -11,7 +11,7 @@ export const queryClient = new QueryClient({
 			toast.error(`Error: ${error.message}`, {
 				action: {
 					label: "retry",
-					onClick: query.invalidate,
+					onClick: () => query.invalidate(),
 				},
 			});
 		},
@@ -36,6 +36,6 @@ export const link = new RPCLink({
 	},
 });
 
-export const client: AppRouterClient = createORPCClient(link);
+export const client: AppRouterClient = createORPCClient<AppRouterClient>(link);
 
-export const orpc = createTanstackQueryUtils(client);
+export const orpc = createTanstackQueryUtils<AppRouterClient>(client);

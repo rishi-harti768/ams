@@ -16,8 +16,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-	title: "ams",
-	description: "ams",
+	title: "AMS | Academic Management System",
+	description:
+		"Track your academic performance, CGPA, and semester goals efficiently.",
 };
 
 export default function RootLayout({

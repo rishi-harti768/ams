@@ -109,7 +109,7 @@ export function ProfileForm({
 								name={field.name}
 								onBlur={field.handleBlur}
 								onChange={(e) => field.handleChange(e.target.value)}
-								placeholder="e.g. Stanford University"
+								placeholder="e.g. Stanford University…"
 								value={field.state.value}
 							/>
 						</div>
@@ -120,10 +120,18 @@ export function ProfileForm({
 					<form.Field
 						name="currentSemester"
 						validators={{
-							onChange: ({ value }) =>
-								value < 1 || value > 20
-									? "Must be between 1 and 20"
-									: undefined,
+							onChange: ({ value }) => {
+								if (
+									value === undefined ||
+									value === ("" as unknown as number)
+								) {
+									return "Required";
+								}
+								if (value < 1 || value > 20) {
+									return "Must be between 1 and 20";
+								}
+								return;
+							},
 						}}
 					>
 						{(field) => (
@@ -141,10 +149,18 @@ export function ProfileForm({
 									min="1"
 									onBlur={field.handleBlur}
 									onChange={(e) =>
-										field.handleChange(Number.parseInt(e.target.value, 10))
+										field.handleChange(
+											e.target.value === ""
+												? ("" as unknown as number)
+												: Number.parseInt(e.target.value, 10)
+										)
 									}
 									type="number"
-									value={field.state.value}
+									value={
+										field.state.value === ("" as unknown as number)
+											? ""
+											: field.state.value
+									}
 								/>
 								{field.state.meta.errors.length > 0 && (
 									<p className="font-medium text-[10px] text-rose-500">
@@ -158,10 +174,18 @@ export function ProfileForm({
 					<form.Field
 						name="totalSemesters"
 						validators={{
-							onChange: ({ value }) =>
-								value < 1 || value > 20
-									? "Must be between 1 and 20"
-									: undefined,
+							onChange: ({ value }) => {
+								if (
+									value === undefined ||
+									value === ("" as unknown as number)
+								) {
+									return "Required";
+								}
+								if (value < 1 || value > 20) {
+									return "Must be between 1 and 20";
+								}
+								return;
+							},
 						}}
 					>
 						{(field) => (
@@ -179,10 +203,18 @@ export function ProfileForm({
 									min="1"
 									onBlur={field.handleBlur}
 									onChange={(e) =>
-										field.handleChange(Number.parseInt(e.target.value, 10))
+										field.handleChange(
+											e.target.value === ""
+												? ("" as unknown as number)
+												: Number.parseInt(e.target.value, 10)
+										)
 									}
 									type="number"
-									value={field.state.value}
+									value={
+										field.state.value === ("" as unknown as number)
+											? ""
+											: field.state.value
+									}
 								/>
 								{field.state.meta.errors.length > 0 && (
 									<p className="font-medium text-[10px] text-rose-500">
@@ -217,11 +249,15 @@ export function ProfileForm({
 									min="0"
 									onBlur={field.handleBlur}
 									onChange={(e) =>
-										field.handleChange(Number.parseFloat(e.target.value))
+										field.handleChange(
+											e.target.value === ""
+												? undefined
+												: Number.parseFloat(e.target.value)
+										)
 									}
 									step="0.01"
 									type="number"
-									value={field.state.value}
+									value={field.state.value ?? ""}
 								/>
 								{field.state.meta.errors.length > 0 && (
 									<p className="font-medium text-[10px] text-rose-500">
@@ -239,7 +275,7 @@ export function ProfileForm({
 				disabled={isLoading}
 				type="submit"
 			>
-				{isLoading ? "Saving Profile..." : "Complete Setup"}
+				{isLoading ? "Saving Profile…" : "Complete Setup"}
 			</Button>
 		</form>
 	);
