@@ -4,6 +4,7 @@ import { env } from "@ams/env/server";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 import { nextCookies } from "better-auth/next-js";
+import { admin } from "better-auth/plugins/admin";
 
 export function createAuth() {
 	const db = createDb();
@@ -23,7 +24,7 @@ export function createAuth() {
 		emailAndPassword: {
 			enabled: true,
 		},
-		plugins: [nextCookies()],
+		plugins: [nextCookies(), admin()],
 	});
 }
 

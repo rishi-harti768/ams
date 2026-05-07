@@ -50,7 +50,7 @@
     "@ams/config": "workspace:*",
     "@biomejs/biome": "2.4.12",
     "@types/node": "^22.13.14",
-    "turbo": "^2.8.12",
+    "turbo": "^2.9.9",
     "typescript": "catalog:",
     "ultracite": "7.6.2"
   },
