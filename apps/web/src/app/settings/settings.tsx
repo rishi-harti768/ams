@@ -84,6 +84,7 @@ export default function Settings() {
 										: undefined
 								}
 								isLoading={isUpdating}
+								key={profile?.id ?? "new"}
 								onSubmit={handleSubmit}
 							/>
 						</CardContent>

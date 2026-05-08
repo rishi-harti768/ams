@@ -20,6 +20,8 @@ import {
 	Trophy,
 } from "lucide-react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 import {
 	useCGPAProjection,
@@ -28,10 +30,18 @@ import {
 } from "@/hooks/use-cgpa";
 
 export default function Dashboard() {
-	const { data, isLoading } = useDashboardData();
+	const router = useRouter();
+	const { data, isLoading, isFetching } = useDashboardData();
+	const { data: cumulativeProjection } = useCumulativeCGPAProjection();
 	const activeSemesterId = data?.activeSemester?.id;
 	const { data: projectionData } = useCGPAProjection(activeSemesterId || "");
-	const { data: cumulativeProjection } = useCumulativeCGPAProjection();
+
+	// Guard: Redirect to onboarding if profile is missing
+	useEffect(() => {
+		if (!isLoading && !isFetching && data && !data.profile) {
+			router.replace("/onboarding");
+		}
+	}, [data, isLoading, isFetching, router]);
 
 	if (isLoading) {
 		return <DashboardSkeleton />;

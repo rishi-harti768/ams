@@ -2,8 +2,8 @@
 
 import { useForm } from "@tanstack/react-form";
 import { Button } from "./button";
-import { Input } from "./input";
 import { Label } from "./label";
+import { Slider } from "./slider";
 
 export interface ProfileFormValues {
 	targetCumulativeCGPA?: number;
@@ -49,38 +49,50 @@ export function ProfileForm({
 					}}
 				>
 					{(field) => (
-						<div className="grid gap-2">
-							<Label
-								className="font-semibold text-[11px] uppercase"
-								htmlFor={field.name}
-							>
-								Target Cumulative CGPA
-							</Label>
-							<Input
-								className="h-10"
-								id={field.name}
-								max="10"
-								min="0"
-								onBlur={field.handleBlur}
-								onChange={(e) =>
-									field.handleChange(
-										e.target.value === ""
-											? undefined
-											: Number.parseFloat(e.target.value)
-									)
-								}
-								placeholder="e.g. 8.50"
-								step="0.01"
-								type="number"
-								value={field.state.value ?? ""}
-							/>
+						<div className="grid gap-6">
+							<div className="flex items-center justify-between">
+								<Label
+									className="font-semibold text-[11px] text-slate-500 uppercase tracking-wider"
+									htmlFor={field.name}
+								>
+									Target Cumulative CGPA
+								</Label>
+								<span className="font-bold text-2xl text-primary tabular-nums">
+									{(field.state.value ?? 8.0).toFixed(1)}
+								</span>
+							</div>
+
+							<div className="px-1">
+								<Slider
+									max={10}
+									min={0}
+									onValueChange={(val) => {
+										const num = Array.isArray(val) ? val[0] : val;
+										if (typeof num === "number") {
+											field.handleChange(num);
+										}
+									}}
+									step={0.1}
+									value={[field.state.value ?? 8.0]}
+								/>
+							</div>
+
+							<div className="flex justify-between px-1 font-medium text-[10px] text-slate-400">
+								<span>0.0</span>
+								<span>2.5</span>
+								<span>5.0</span>
+								<span>7.5</span>
+								<span>10.0</span>
+							</div>
+
 							{field.state.meta.errors.length > 0 && (
 								<p className="font-medium text-[10px] text-rose-500">
 									{field.state.meta.errors.join(", ")}
 								</p>
 							)}
-							<p className="text-[11px] text-muted-foreground">
-								Enter the cumulative CGPA you aim to achieve by graduation.
+							<p className="text-pretty text-[12px] text-slate-500 leading-relaxed">
+								Drag the slider to set your graduation goal. This target will
+								drive your semester-by-semester grade projections.
 							</p>
 						</div>
 					)}

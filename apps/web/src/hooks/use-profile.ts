@@ -20,6 +20,7 @@ export function useCreateProfile() {
 			onSuccess: () => {
 				toast.success("Profile created successfully");
 				queryClient.invalidateQueries({ queryKey: orpc.profile.key() });
+				queryClient.resetQueries({ queryKey: orpc.cgpa.key() });
 			},
 			onError: (error) => {
 				toast.error(`Failed to create profile: ${error.message}`);
@@ -39,6 +40,7 @@ export function useUpdateProfile() {
 			onSuccess: () => {
 				toast.success("Profile updated successfully");
 				queryClient.invalidateQueries({ queryKey: orpc.profile.key() });
+				queryClient.resetQueries({ queryKey: orpc.cgpa.key() });
 			},
 			onError: (error) => {
 				toast.error(`Failed to update profile: ${error.message}`);

@@ -274,7 +274,9 @@ export const cgpaRouter = o.router({
 
 			const totalSemestersCount = allSemesters.length;
 			const now = new Date();
-			const activeIndex = allSemesters.findIndex((s) => now >= s.startDate && now <= s.endDate);
+			const activeIndex = allSemesters.findIndex(
+				(s) => now >= s.startDate && now <= s.endDate
+			);
 			const currentSemesterIndex = activeIndex === -1 ? 1 : activeIndex + 1;
 
 			const remainingSemesters = Math.max(
