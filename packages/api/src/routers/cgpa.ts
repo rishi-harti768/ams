@@ -266,8 +266,18 @@ export const cgpaRouter = o.router({
 				0
 			);
 
-			const remainingSemesters =
-				profile.totalSemesters - profile.currentSemester + 1;
+			const allSemesters = await db.query.semester.findMany({
+				orderBy: (s, { asc }) => [asc(s.createdAt)],
+			});
+
+			const totalSemestersCount = allSemesters.length;
+			const activeIndex = allSemesters.findIndex((s) => s.isActive);
+			const currentSemesterIndex = activeIndex === -1 ? 1 : activeIndex + 1;
+
+			const remainingSemesters = Math.max(
+				0,
+				totalSemestersCount - currentSemesterIndex + 1
+			);
 
 			// Estimate average credits per semester from existing ones, or default to 20
 			const averageCredits =
@@ -289,6 +299,8 @@ export const cgpaRouter = o.router({
 				currentCumulativeCGPA,
 				targetCumulativeCGPA: Number(profile.targetCumulativeCGPA),
 				remainingSemesters,
+				totalSemesters: totalSemestersCount,
+				currentSemester: currentSemesterIndex,
 			};
 		}),
 });

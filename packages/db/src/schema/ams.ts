@@ -20,12 +20,6 @@ export const academicProfile = pgTable(
 		userId: text("user_id")
 			.notNull()
 			.references(() => user.id, { onDelete: "cascade" }),
-		institutionType: text("institution_type", {
-			enum: ["school", "college"],
-		}).notNull(),
-		institutionName: text("institution_name"),
-		currentSemester: integer("current_semester").notNull().default(1),
-		totalSemesters: integer("total_semesters").notNull().default(8),
 		targetCumulativeCGPA: decimal("target_cumulative_cgpa", {
 			precision: 3,
 			scale: 2,
@@ -36,7 +30,7 @@ export const academicProfile = pgTable(
 			.$onUpdate(() => /* @__PURE__ */ new Date())
 			.notNull(),
 	},
-	(table) => [index("academicProfile_userId_idx").on(table.userId)]
+	(table) => [uniqueIndex("academicProfile_userId_idx").on(table.userId)]
 );
 
 // Semester - Global (Admin managed)

@@ -17,10 +17,6 @@ export const profileRouter = o.router({
 	profileCreate: protectedProcedure
 		.input(
 			z.object({
-				institutionType: z.enum(["school", "college"]),
-				institutionName: z.string().optional(),
-				currentSemester: z.number().min(1).max(20),
-				totalSemesters: z.number().min(1).max(20).default(8),
 				targetCumulativeCGPA: z.number().min(0).max(10).optional(),
 			})
 		)
@@ -29,10 +25,6 @@ export const profileRouter = o.router({
 				.insert(academicProfile)
 				.values({
 					userId: context.session.user.id,
-					institutionType: input.institutionType,
-					institutionName: input.institutionName,
-					currentSemester: input.currentSemester,
-					totalSemesters: input.totalSemesters,
 					targetCumulativeCGPA: input.targetCumulativeCGPA?.toString(),
 				})
 				.returning();
@@ -42,35 +34,35 @@ export const profileRouter = o.router({
 	profileUpdate: protectedProcedure
 		.input(
 			z.object({
-				institutionType: z.enum(["school", "college"]).optional(),
-				institutionName: z.string().optional(),
-				currentSemester: z.number().min(1).max(20).optional(),
-				totalSemesters: z.number().min(1).max(20).optional(),
 				targetCumulativeCGPA: z.number().min(0).max(10).optional(),
 			})
 		)
 		.handler(async ({ input, context }) => {
-			const [updatedProfile] = await db
-				.update(academicProfile)
-				.set({
-					...(input.institutionType && {
-						institutionType: input.institutionType,
-					}),
-					...(input.institutionName !== undefined && {
-						institutionName: input.institutionName,
-					}),
-					...(input.currentSemester && {
-						currentSemester: input.currentSemester,
-					}),
-					...(input.totalSemesters && {
-						totalSemesters: input.totalSemesters,
-					}),
-					...(input.targetCumulativeCGPA !== undefined && {
+			const userId = context.session.user.id;
+
+			const existingProfile = await db.query.academicProfile.findFirst({
+				where: eq(academicProfile.userId, userId),
+			});
+
+			if (existingProfile) {
+				const [updated] = await db
+					.update(academicProfile)
+					.set({
 						targetCumulativeCGPA: input.targetCumulativeCGPA?.toString(),
-					}),
+						updatedAt: new Date(),
+					})
+					.where(eq(academicProfile.userId, userId))
+					.returning();
+				return updated ?? null;
+			}
+
+			const [inserted] = await db
+				.insert(academicProfile)
+				.values({
+					userId,
+					targetCumulativeCGPA: input.targetCumulativeCGPA?.toString(),
 				})
-				.where(eq(academicProfile.userId, context.session.user.id))
 				.returning();
-			return updatedProfile ?? null;
+			return inserted ?? null;
 		}),
 });
