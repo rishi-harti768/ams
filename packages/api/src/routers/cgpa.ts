@@ -8,7 +8,7 @@ import {
 import { db } from "@ams/db";
 import { academicProfile, semester } from "@ams/db/schema/ams";
 import { ORPCError } from "@orpc/server";
-import { and, eq } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { o, protectedProcedure } from "../index";
 
@@ -23,12 +23,16 @@ export const cgpaRouter = o.router({
 			});
 
 			const semesters = await db.query.semester.findMany({
-				where: eq(semester.userId, userId),
 				with: {
 					subjects: {
 						with: {
-							scores: true,
+							scores: {
+								where: (score, { eq }) => eq(score.userId, userId),
+							},
 						},
+					},
+					targets: {
+						where: (target, { eq }) => eq(target.userId, userId),
 					},
 				},
 				orderBy: (semester, { desc }) => [desc(semester.createdAt)],
@@ -53,13 +57,15 @@ export const cgpaRouter = o.router({
 					0
 				);
 
+				const target = sem.targets[0];
+
 				return {
 					id: sem.id,
 					name: sem.name,
 					isActive: sem.isActive,
 					cgpa,
 					totalCredits,
-					targetCGPA: sem.targetCGPA ? Number(sem.targetCGPA) : null,
+					targetCGPA: target?.targetSGPA ? Number(target.targetSGPA) : null,
 				};
 			});
 
@@ -73,7 +79,7 @@ export const cgpaRouter = o.router({
 			const activeSemester = semesterData.find((s) => s.isActive);
 
 			return {
-				profile,
+				profile: profile || null,
 				currentCumulativeCGPA,
 				semesters: semesterData,
 				activeSemester: activeSemester || null,
@@ -83,15 +89,15 @@ export const cgpaRouter = o.router({
 	cgpaSemester: protectedProcedure
 		.input(z.object({ semesterId: z.string().uuid() }))
 		.handler(async ({ input, context }) => {
+			const userId = context.session.user.id;
 			const sem = await db.query.semester.findFirst({
-				where: and(
-					eq(semester.id, input.semesterId),
-					eq(semester.userId, context.session.user.id)
-				),
+				where: eq(semester.id, input.semesterId),
 				with: {
 					subjects: {
 						with: {
-							scores: true,
+							scores: {
+								where: (score, { eq }) => eq(score.userId, userId),
+							},
 						},
 					},
 				},
@@ -122,12 +128,14 @@ export const cgpaRouter = o.router({
 	cgpaCumulative: protectedProcedure
 		.input(z.object({}))
 		.handler(async ({ context }) => {
+			const userId = context.session.user.id;
 			const semesters = await db.query.semester.findMany({
-				where: eq(semester.userId, context.session.user.id),
 				with: {
 					subjects: {
 						with: {
-							scores: true,
+							scores: {
+								where: (score, { eq }) => eq(score.userId, userId),
+							},
 						},
 					},
 				},
@@ -160,25 +168,33 @@ export const cgpaRouter = o.router({
 	cgpaProjection: protectedProcedure
 		.input(z.object({ semesterId: z.string().uuid() }))
 		.handler(async ({ input, context }) => {
+			const userId = context.session.user.id;
 			const sem = await db.query.semester.findFirst({
-				where: and(
-					eq(semester.id, input.semesterId),
-					eq(semester.userId, context.session.user.id)
-				),
+				where: eq(semester.id, input.semesterId),
 				with: {
 					subjects: {
 						with: {
-							scores: true,
+							scores: {
+								where: (score, { eq }) => eq(score.userId, userId),
+							},
 						},
+					},
+					targets: {
+						where: (target, { eq }) => eq(target.userId, userId),
 					},
 				},
 			});
 
-			if (!sem?.targetCGPA) {
+			if (!sem) {
+				throw new ORPCError("NOT_FOUND", { message: "Semester not found" });
+			}
+
+			const target = sem.targets[0];
+			if (!target?.targetSGPA) {
 				return null;
 			}
 
-			const targetCGPA = Number(sem.targetCGPA);
+			const targetSGPA = Number(target.targetSGPA);
 
 			const projections = sem.subjects.map((sub) => {
 				const internalMarks = sub.scores[0]?.internalMarks
@@ -192,13 +208,14 @@ export const cgpaRouter = o.router({
 						internalMarks,
 						sub.maxInternalMarks,
 						sub.maxEndsemMarks,
-						targetCGPA
+						targetSGPA
 					),
 				};
 			});
 
 			return projections;
 		}),
+
 	cgpaCumulativeProjection: protectedProcedure
 		.input(z.object({}))
 		.handler(async ({ context }) => {
@@ -213,11 +230,12 @@ export const cgpaRouter = o.router({
 			}
 
 			const semesters = await db.query.semester.findMany({
-				where: eq(semester.userId, userId),
 				with: {
 					subjects: {
 						with: {
-							scores: true,
+							scores: {
+								where: (score, { eq }) => eq(score.userId, userId),
+							},
 						},
 					},
 				},

@@ -2,7 +2,7 @@ import { calculateGradePoint, calculateTotalPercentage } from "@ams/ams";
 import { db } from "@ams/db";
 import { score, subject } from "@ams/db/schema/ams";
 import { ORPCError } from "@orpc/server";
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import { o, protectedProcedure } from "../index";
 
@@ -11,7 +11,10 @@ export const scoreRouter = o.router({
 		.input(z.object({ subjectId: z.string().uuid() }))
 		.handler(async ({ input, context }) => {
 			const item = await db.query.score.findFirst({
-				where: eq(score.subjectId, input.subjectId),
+				where: and(
+					eq(score.subjectId, input.subjectId),
+					eq(score.userId, context.session.user.id)
+				),
 				with: {
 					subject: {
 						with: {
@@ -20,12 +23,6 @@ export const scoreRouter = o.router({
 					},
 				},
 			});
-
-			if (!item || item.subject.semester.userId !== context.session.user.id) {
-				throw new ORPCError("FORBIDDEN", {
-					message: "Score not found or access denied",
-				});
-			}
 
 			return item;
 		}),
@@ -40,16 +37,10 @@ export const scoreRouter = o.router({
 		.handler(async ({ input, context }) => {
 			const sub = await db.query.subject.findFirst({
 				where: eq(subject.id, input.subjectId),
-				with: {
-					semester: true,
-					scores: true,
-				},
 			});
 
-			if (!sub || sub.semester.userId !== context.session.user.id) {
-				throw new ORPCError("FORBIDDEN", {
-					message: "Subject not found or access denied",
-				});
+			if (!sub) {
+				throw new ORPCError("NOT_FOUND", { message: "Subject not found" });
 			}
 
 			if (
@@ -61,7 +52,13 @@ export const scoreRouter = o.router({
 				});
 			}
 
-			const currentScore = sub.scores[0];
+			const currentScore = await db.query.score.findFirst({
+				where: and(
+					eq(score.subjectId, input.subjectId),
+					eq(score.userId, context.session.user.id)
+				),
+			});
+
 			const endsemMarks = currentScore?.endsemMarks
 				? Number(currentScore.endsemMarks)
 				: null;
@@ -77,12 +74,20 @@ export const scoreRouter = o.router({
 				percentage === null ? null : calculateGradePoint(percentage);
 
 			const [updatedScore] = await db
-				.update(score)
-				.set({
+				.insert(score)
+				.values({
+					userId: context.session.user.id,
+					subjectId: input.subjectId,
 					internalMarks: input.internalMarks?.toString(),
 					gradePoint: gradePoint?.toString(),
 				})
-				.where(eq(score.subjectId, input.subjectId))
+				.onConflictDoUpdate({
+					target: [score.userId, score.subjectId],
+					set: {
+						internalMarks: input.internalMarks?.toString(),
+						gradePoint: gradePoint?.toString(),
+					},
+				})
 				.returning();
 
 			return updatedScore;
@@ -98,16 +103,10 @@ export const scoreRouter = o.router({
 		.handler(async ({ input, context }) => {
 			const sub = await db.query.subject.findFirst({
 				where: eq(subject.id, input.subjectId),
-				with: {
-					semester: true,
-					scores: true,
-				},
 			});
 
-			if (!sub || sub.semester.userId !== context.session.user.id) {
-				throw new ORPCError("FORBIDDEN", {
-					message: "Subject not found or access denied",
-				});
+			if (!sub) {
+				throw new ORPCError("NOT_FOUND", { message: "Subject not found" });
 			}
 
 			if (
@@ -119,7 +118,13 @@ export const scoreRouter = o.router({
 				});
 			}
 
-			const currentScore = sub.scores[0];
+			const currentScore = await db.query.score.findFirst({
+				where: and(
+					eq(score.subjectId, input.subjectId),
+					eq(score.userId, context.session.user.id)
+				),
+			});
+
 			const internalMarks = currentScore?.internalMarks
 				? Number(currentScore.internalMarks)
 				: null;
@@ -135,12 +140,20 @@ export const scoreRouter = o.router({
 				percentage === null ? null : calculateGradePoint(percentage);
 
 			const [updatedScore] = await db
-				.update(score)
-				.set({
+				.insert(score)
+				.values({
+					userId: context.session.user.id,
+					subjectId: input.subjectId,
 					endsemMarks: input.endsemMarks?.toString(),
 					gradePoint: gradePoint?.toString(),
 				})
-				.where(eq(score.subjectId, input.subjectId))
+				.onConflictDoUpdate({
+					target: [score.userId, score.subjectId],
+					set: {
+						endsemMarks: input.endsemMarks?.toString(),
+						gradePoint: gradePoint?.toString(),
+					},
+				})
 				.returning();
 
 			return updatedScore;

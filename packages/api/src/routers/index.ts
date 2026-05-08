@@ -1,6 +1,7 @@
 import type { RouterClient } from "@orpc/server";
 
 import { o, protectedProcedure, publicProcedure } from "../index";
+import { adminRouter } from "./admin";
 import { cgpaRouter } from "./cgpa";
 import { profileRouter } from "./profile";
 import { scoreRouter } from "./score";
@@ -13,6 +14,7 @@ export const appRouter = o.router({
 		message: "This is private",
 		user: context.session?.user,
 	})),
+	admin: adminRouter,
 	profile: profileRouter,
 	semester: semesterRouter,
 	subject: subjectRouter,

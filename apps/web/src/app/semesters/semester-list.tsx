@@ -5,62 +5,18 @@ import { Button } from "@ams/ui/components/button";
 import {
 	Card,
 	CardContent,
-	CardDescription,
 	CardFooter,
 	CardHeader,
 	CardTitle,
 } from "@ams/ui/components/card";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from "@ams/ui/components/dialog";
-import {
-	DropdownMenu,
-	DropdownMenuContent,
-	DropdownMenuItem,
-	DropdownMenuTrigger,
-} from "@ams/ui/components/dropdown-menu";
-import {
-	SemesterForm,
-	type SemesterFormValues,
-} from "@ams/ui/components/semester-form";
 import { Skeleton } from "@ams/ui/components/skeleton";
 import { cn } from "@ams/ui/lib/utils";
-import {
-	Calendar,
-	CheckCircle2,
-	ExternalLink,
-	MoreVertical,
-	Plus,
-	Trash2,
-} from "lucide-react";
+import { Calendar, ExternalLink } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
-import {
-	useCreateSemester,
-	useDeleteSemester,
-	useSemesters,
-	useSetActiveSemester,
-} from "@/hooks/use-semesters";
+import { useSemesters } from "@/hooks/use-semesters";
 
 export default function SemesterList() {
 	const { data: semesters, isLoading } = useSemesters();
-	const { mutate: createSemester, isPending: isCreating } = useCreateSemester();
-	const { mutate: setActive } = useSetActiveSemester();
-	const { mutate: deleteSemester } = useDeleteSemester();
-	const [isOpen, setIsOpen] = useState(false);
-
-	const handleCreate = (values: SemesterFormValues) => {
-		createSemester(values, {
-			onSuccess: () => {
-				setIsOpen(false);
-			},
-		});
-	};
 
 	if (isLoading) {
 		return <SemesterListSkeleton />;
@@ -72,27 +28,9 @@ export default function SemesterList() {
 				<div className="flex flex-col gap-1">
 					<h1 className="font-bold text-3xl tracking-tight">Semesters</h1>
 					<p className="text-muted-foreground">
-						Manage your academic terms and track progress.
+						View your academic terms and track progress.
 					</p>
 				</div>
-				<Dialog onOpenChange={setIsOpen} open={isOpen}>
-					<DialogTrigger render={<Button />}>
-						<Plus data-icon="inline-start" /> Add Semester
-					</DialogTrigger>
-					<DialogContent className="sm:max-w-[425px]">
-						<DialogHeader>
-							<DialogTitle>Add New Semester</DialogTitle>
-							<DialogDescription>
-								Enter the details for your new academic term.
-							</DialogDescription>
-						</DialogHeader>
-						<SemesterForm
-							isLoading={isCreating}
-							onCancel={() => setIsOpen(false)}
-							onSubmit={handleCreate}
-						/>
-					</DialogContent>
-				</Dialog>
 			</div>
 
 			{!semesters || semesters.length === 0 ? (
@@ -127,37 +65,7 @@ export default function SemesterList() {
 												</Badge>
 											) : null}
 										</div>
-										<CardDescription className="flex items-center gap-1.5">
-											<Calendar data-icon="inline-start" />
-											{semester.academicYear || "Year not set"}
-										</CardDescription>
 									</div>
-									<DropdownMenu>
-										<DropdownMenuTrigger
-											render={
-												<Button
-													className="h-8 w-8"
-													size="icon"
-													variant="ghost"
-												/>
-											}
-										>
-											<MoreVertical data-icon="inline" />
-										</DropdownMenuTrigger>
-										<DropdownMenuContent align="end">
-											<DropdownMenuItem
-												onClick={() => setActive({ id: semester.id })}
-											>
-												<CheckCircle2 data-icon="inline-start" /> Set as Active
-											</DropdownMenuItem>
-											<DropdownMenuItem
-												className="text-destructive focus:text-destructive"
-												onClick={() => deleteSemester({ id: semester.id })}
-											>
-												<Trash2 data-icon="inline-start" /> Delete
-											</DropdownMenuItem>
-										</DropdownMenuContent>
-									</DropdownMenu>
 								</div>
 							</CardHeader>
 							<CardContent>
@@ -167,8 +75,8 @@ export default function SemesterList() {
 											Target CGPA
 										</p>
 										<p className="font-bold text-lg">
-											{semester.targetCGPA
-												? Number(semester.targetCGPA).toFixed(2)
+											{semester.targets?.[0]?.targetSGPA
+												? Number(semester.targets[0].targetSGPA).toFixed(2)
 												: "N/A"}
 										</p>
 									</div>
@@ -206,7 +114,9 @@ interface SemesterSummary {
 	id: string;
 	isActive: boolean;
 	name: string;
-	targetCGPA: string | null;
+	targets: {
+		targetSGPA: string | null;
+	}[];
 }
 
 function SemesterListSkeleton() {

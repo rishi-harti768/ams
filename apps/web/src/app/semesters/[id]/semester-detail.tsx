@@ -10,44 +10,25 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@ams/ui/components/card";
-import {
-	Dialog,
-	DialogContent,
-	DialogDescription,
-	DialogHeader,
-	DialogTitle,
-	DialogTrigger,
-} from "@ams/ui/components/dialog";
 import { ScoreInput } from "@ams/ui/components/score-input";
 import { Skeleton } from "@ams/ui/components/skeleton";
-import {
-	SubjectForm,
-	type SubjectFormValues,
-} from "@ams/ui/components/subject-form";
 import { cn } from "@ams/ui/lib/utils";
 import {
 	AlertCircle,
 	ArrowLeft,
 	Calculator,
 	CheckCircle2,
-	Plus,
 	Target,
-	Trash2,
 	TrendingUp,
 } from "lucide-react";
 import Link from "next/link";
-import { useState } from "react";
 import { useCGPAProjection } from "@/hooks/use-cgpa";
 import {
 	useUpdateEndsemMarks,
 	useUpdateInternalMarks,
 } from "@/hooks/use-scores";
 import { useSemester } from "@/hooks/use-semesters";
-import {
-	useCreateSubject,
-	useDeleteSubject,
-	useSubjects,
-} from "@/hooks/use-subjects";
+import { useSubjects } from "@/hooks/use-subjects";
 
 interface SemesterDetailProps {
 	id: string;
@@ -58,13 +39,10 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 	const { data: subjects, isLoading: isSubjectsLoading } = useSubjects(id);
 	const { data: projections } = useCGPAProjection(id);
 
-	const { mutate: createSubject, isPending: isCreatingSubject } =
-		useCreateSubject();
-	const { mutate: deleteSubject } = useDeleteSubject();
 	const { mutate: updateInternal } = useUpdateInternalMarks();
 	const { mutate: updateEndsem } = useUpdateEndsemMarks();
 
-	const [isAddSubjectOpen, setIsAddSubjectOpen] = useState(false);
+	const targetSGPA = semester?.targets?.[0]?.targetSGPA ?? null;
 
 	if (isSemesterLoading || isSubjectsLoading) {
 		return <SemesterDetailSkeleton />;
@@ -90,15 +68,6 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 			</div>
 		);
 	}
-
-	const handleAddSubject = (values: SubjectFormValues) => {
-		createSubject(
-			{ ...values, semesterId: id },
-			{
-				onSuccess: () => setIsAddSubjectOpen(false),
-			}
-		);
-	};
 
 	return (
 		<div className="fade-in flex animate-in flex-col gap-8 duration-500">
@@ -142,24 +111,6 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 							</span>
 						</div>
 					</Card>
-					<Dialog onOpenChange={setIsAddSubjectOpen} open={isAddSubjectOpen}>
-						<DialogTrigger render={<Button className="h-12 px-6" />}>
-							<Plus data-icon="inline-start" /> Add Subject
-						</DialogTrigger>
-						<DialogContent>
-							<DialogHeader>
-								<DialogTitle>Add Subject</DialogTitle>
-								<DialogDescription>
-									Add a new subject to {semester.name}.
-								</DialogDescription>
-							</DialogHeader>
-							<SubjectForm
-								isLoading={isCreatingSubject}
-								onCancel={() => setIsAddSubjectOpen(false)}
-								onSubmit={handleAddSubject}
-							/>
-						</DialogContent>
-					</Dialog>
 				</div>
 			</div>
 
@@ -182,7 +133,6 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 						<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
 							{subjects.map((subject: SemesterSubject) => (
 								<SubjectCard
-									deleteSubject={deleteSubject}
 									key={subject.id}
 									projection={projections?.find(
 										(p: { subjectId: string }) => p.subjectId === subject.id
@@ -212,16 +162,14 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 								<div className="flex items-center justify-between font-medium text-muted-foreground text-xs uppercase tracking-wider">
 									<span>Semester Goal</span>
 									<span className="text-foreground">
-										{semester.targetCGPA
-											? Number(semester.targetCGPA).toFixed(2)
-											: "N/A"}
+										{targetSGPA ? Number(targetSGPA).toFixed(2) : "N/A"}
 									</span>
 								</div>
 								<div className="h-2 w-full overflow-hidden rounded-full bg-slate-100">
 									<div
 										className="h-full bg-primary transition-all duration-1000"
 										style={{
-											width: `${(semester.targetCGPA ? Number(semester.targetCGPA) : 0) * 10}%`,
+											width: `${(targetSGPA ? Number(targetSGPA) : 0) * 10}%`,
 										}}
 									/>
 								</div>
@@ -270,7 +218,7 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 						<CardFooter className="border-t bg-slate-50/50 py-4">
 							<p className="text-[10px] text-muted-foreground italic leading-relaxed">
 								* Required marks are calculated based on your target CGPA of{" "}
-								{semester.targetCGPA || "8.00"}.
+								{targetSGPA || "8.00"}.
 							</p>
 						</CardFooter>
 					</Card>
@@ -306,7 +254,6 @@ interface Projection {
 }
 
 interface SubjectCardProps {
-	deleteSubject: (val: { id: string }) => void;
 	projection?: Projection;
 	subject: SemesterSubject;
 	updateEndsem: (val: {
@@ -322,7 +269,6 @@ interface SubjectCardProps {
 function SubjectCard({
 	subject,
 	projection,
-	deleteSubject,
 	updateInternal,
 	updateEndsem,
 }: SubjectCardProps) {
@@ -342,14 +288,6 @@ function SubjectCard({
 						{subject.creditHours} Credits
 					</CardDescription>
 				</div>
-				<Button
-					className="h-8 w-8 text-muted-foreground opacity-0 transition-all hover:text-destructive group-hover:opacity-100"
-					onClick={() => deleteSubject({ id: subject.id })}
-					size="icon"
-					variant="ghost"
-				>
-					<Trash2 data-icon="inline" />
-				</Button>
 			</CardHeader>
 			<CardContent className="flex flex-col gap-6">
 				<div className="grid grid-cols-2 gap-4">
