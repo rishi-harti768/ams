@@ -17,7 +17,14 @@ export const semesterRouter = o.router({
 					},
 				},
 			});
-			return semesters;
+
+			const now = new Date();
+
+			return semesters.map((s) => ({
+				...s,
+				isActive: now >= s.startDate && now <= s.endDate,
+				isLocked: now < s.startDate,
+			}));
 		}),
 
 	semesterGet: protectedProcedure
@@ -40,6 +47,17 @@ export const semesterRouter = o.router({
 					},
 				},
 			});
-			return item;
+
+			if (!item) {
+				return null;
+			}
+
+			const now = new Date();
+
+			return {
+				...item,
+				isActive: now >= item.startDate && now <= item.endDate,
+				isLocked: now < item.startDate,
+			};
 		}),
 });

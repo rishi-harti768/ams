@@ -58,11 +58,13 @@ export const cgpaRouter = o.router({
 				);
 
 				const target = sem.targets[0];
+				const now = new Date();
+				const isActive = now >= sem.startDate && now <= sem.endDate;
 
 				return {
 					id: sem.id,
 					name: sem.name,
-					isActive: sem.isActive,
+					isActive,
 					cgpa,
 					totalCredits,
 					targetCGPA: target?.targetSGPA ? Number(target.targetSGPA) : null,
@@ -271,7 +273,8 @@ export const cgpaRouter = o.router({
 			});
 
 			const totalSemestersCount = allSemesters.length;
-			const activeIndex = allSemesters.findIndex((s) => s.isActive);
+			const now = new Date();
+			const activeIndex = allSemesters.findIndex((s) => now >= s.startDate && now <= s.endDate);
 			const currentSemesterIndex = activeIndex === -1 ? 1 : activeIndex + 1;
 
 			const remainingSemesters = Math.max(

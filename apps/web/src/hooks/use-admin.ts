@@ -44,19 +44,6 @@ export function useAdminDeleteSemester() {
 	);
 }
 
-export function useAdminSetActiveSemesters() {
-	const queryClient = useQueryClient();
-	return useMutation(
-		orpc.admin.semesterSetActive.mutationOptions({
-			onSuccess: () => {
-				queryClient.invalidateQueries({
-					queryKey: orpc.admin.semesterList.queryKey({}),
-				});
-			},
-		})
-	);
-}
-
 export function useAdminCreateSubject() {
 	const queryClient = useQueryClient();
 	return useMutation(

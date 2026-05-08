@@ -1,6 +1,6 @@
 import { db } from "@ams/db";
 import { semester, subject } from "@ams/db/schema/ams";
-import { eq, inArray } from "drizzle-orm";
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { adminProcedure, o } from "../index";
 
@@ -14,19 +14,28 @@ export const adminRouter = o.router({
 			orderBy: (semester, { desc }) => [desc(semester.createdAt)],
 		});
 
+		const now = new Date();
+
 		return semesters.map((s) => ({
 			...s,
+			isActive: now >= s.startDate && now <= s.endDate,
 			totalCredits: s.subjects.reduce((acc, sub) => acc + sub.creditHours, 0),
 		}));
 	}),
 
 	semesterCreate: adminProcedure
 		.input(
-			z.object({
-				name: z.string().min(1),
-				academicYear: z.string().optional(),
-				isActive: z.boolean().default(false),
-			})
+			z
+				.object({
+					name: z.string().min(1),
+					academicYear: z.string().optional(),
+					startDate: z.date(),
+					endDate: z.date(),
+				})
+				.refine((data) => data.endDate > data.startDate, {
+					message: "End date must be after start date",
+					path: ["endDate"],
+				})
 		)
 		.handler(async ({ input }) => {
 			const [newSemester] = await db
@@ -34,7 +43,8 @@ export const adminRouter = o.router({
 				.values({
 					name: input.name,
 					academicYear: input.academicYear,
-					isActive: input.isActive,
+					startDate: input.startDate,
+					endDate: input.endDate,
 				})
 				.returning();
 			return newSemester;
@@ -42,12 +52,26 @@ export const adminRouter = o.router({
 
 	semesterUpdate: adminProcedure
 		.input(
-			z.object({
-				id: z.string().uuid(),
-				name: z.string().min(1).optional(),
-				academicYear: z.string().optional(),
-				isActive: z.boolean().optional(),
-			})
+			z
+				.object({
+					id: z.string().uuid(),
+					name: z.string().min(1).optional(),
+					academicYear: z.string().optional(),
+					startDate: z.date().optional(),
+					endDate: z.date().optional(),
+				})
+				.refine(
+					(data) => {
+						if (data.startDate && data.endDate) {
+							return data.endDate > data.startDate;
+						}
+						return true;
+					},
+					{
+						message: "End date must be after start date",
+						path: ["endDate"],
+					}
+				)
 		)
 		.handler(async ({ input }) => {
 			const [updatedSemester] = await db
@@ -57,7 +81,8 @@ export const adminRouter = o.router({
 					...(input.academicYear !== undefined && {
 						academicYear: input.academicYear,
 					}),
-					...(input.isActive !== undefined && { isActive: input.isActive }),
+					...(input.startDate && { startDate: input.startDate }),
+					...(input.endDate && { endDate: input.endDate }),
 				})
 				.where(eq(semester.id, input.id))
 				.returning();
@@ -72,16 +97,6 @@ export const adminRouter = o.router({
 				.where(eq(semester.id, input.id))
 				.returning();
 			return deletedSemester;
-		}),
-
-	semesterSetActive: adminProcedure
-		.input(z.object({ ids: z.array(z.string().uuid()), active: z.boolean() }))
-		.handler(async ({ input }) => {
-			await db
-				.update(semester)
-				.set({ isActive: input.active })
-				.where(inArray(semester.id, input.ids));
-			return { success: true };
 		}),
 
 	// Subject Management

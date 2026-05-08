@@ -18,6 +18,7 @@ import {
 	ArrowLeft,
 	Calculator,
 	CheckCircle2,
+	Lock,
 	Target,
 	TrendingUp,
 } from "lucide-react";
@@ -92,6 +93,11 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 								Active
 							</Badge>
 						) : null}
+						{semester.isLocked ? (
+							<Badge className="h-6" variant="secondary">
+								<Lock className="mr-1 h-3 w-3" /> Locked (Read-Only)
+							</Badge>
+						) : null}
 					</div>
 					<p className="text-muted-foreground">
 						{semester.academicYear || "No academic year set"}
@@ -133,6 +139,7 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 						<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
 							{subjects.map((subject: SemesterSubject) => (
 								<SubjectCard
+									isLocked={!!semester.isLocked}
 									key={subject.id}
 									projection={projections?.find(
 										(p: { subjectId: string }) => p.subjectId === subject.id
@@ -240,6 +247,24 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 							</div>
 						</div>
 					) : null}
+
+					{semester.isLocked ? (
+						<div className="flex gap-4 rounded-xl border border-amber-100 bg-amber-50 p-5">
+							<Lock
+								className="shrink-0 text-amber-500"
+								data-icon="inline-start"
+							/>
+							<div>
+								<h4 className="font-bold text-amber-900 text-sm">
+									Future Semester
+								</h4>
+								<p className="mt-1 text-amber-700 text-xs leading-relaxed">
+									This semester hasn't started yet. You can view subjects and
+									goals, but score editing is disabled until the start date.
+								</p>
+							</div>
+						</div>
+					) : null}
 				</div>
 			</div>
 		</div>
@@ -254,6 +279,7 @@ interface Projection {
 }
 
 interface SubjectCardProps {
+	isLocked?: boolean;
 	projection?: Projection;
 	subject: SemesterSubject;
 	updateEndsem: (val: {
@@ -271,6 +297,7 @@ function SubjectCard({
 	projection,
 	updateInternal,
 	updateEndsem,
+	isLocked,
 }: SubjectCardProps) {
 	const score = subject.scores[0];
 
@@ -292,6 +319,7 @@ function SubjectCard({
 			<CardContent className="flex flex-col gap-6">
 				<div className="grid grid-cols-2 gap-4">
 					<ScoreInput
+						disabled={isLocked}
 						label="Internal"
 						max={subject.maxInternalMarks}
 						onValueChange={(val) =>
@@ -303,6 +331,7 @@ function SubjectCard({
 						value={score?.internalMarks ? Number(score.internalMarks) : null}
 					/>
 					<ScoreInput
+						disabled={isLocked}
 						label="End-Sem"
 						max={subject.maxEndsemMarks}
 						onValueChange={(val) =>

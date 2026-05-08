@@ -1,6 +1,5 @@
 import { relations } from "drizzle-orm";
 import {
-	boolean,
 	decimal,
 	index,
 	integer,
@@ -38,7 +37,8 @@ export const semester = pgTable("semester", {
 	id: uuid("id").primaryKey().defaultRandom(),
 	name: text("name").notNull(),
 	academicYear: text("academic_year"),
-	isActive: boolean("is_active").default(false).notNull(),
+	startDate: timestamp("start_date", { withTimezone: true }).notNull(),
+	endDate: timestamp("end_date", { withTimezone: true }).notNull(),
 	createdAt: timestamp("created_at").defaultNow().notNull(),
 	updatedAt: timestamp("updated_at")
 		.defaultNow()

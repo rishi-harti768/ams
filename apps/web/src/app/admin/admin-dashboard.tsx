@@ -8,6 +8,7 @@ import {
 } from "@ams/ui/components/accordion";
 import { Badge } from "@ams/ui/components/badge";
 import { Button } from "@ams/ui/components/button";
+import { Calendar } from "@ams/ui/components/calendar";
 import {
 	Card,
 	CardContent,
@@ -24,7 +25,11 @@ import {
 } from "@ams/ui/components/dialog";
 import { Input } from "@ams/ui/components/input";
 import { Label } from "@ams/ui/components/label";
-import { Switch } from "@ams/ui/components/switch";
+import {
+	Popover,
+	PopoverContent,
+	PopoverTrigger,
+} from "@ams/ui/components/popover";
 import {
 	Table,
 	TableBody,
@@ -33,8 +38,10 @@ import {
 	TableHeader,
 	TableRow,
 } from "@ams/ui/components/table";
+import { cn } from "@ams/ui/lib/utils";
 import { useForm } from "@tanstack/react-form";
-import { Edit2, Plus, Trash2 } from "lucide-react";
+import { addMonths, format } from "date-fns";
+import { CalendarIcon, Edit2, Plus, Trash2 } from "lucide-react";
 import { useState } from "react";
 import { toast } from "sonner";
 import {
@@ -43,7 +50,6 @@ import {
 	useAdminDeleteSemester,
 	useAdminDeleteSubject,
 	useAdminSemesters,
-	useAdminSetActiveSemesters,
 	useAdminUpdateSemester,
 	useAdminUpdateSubject,
 } from "@/hooks/use-admin";
@@ -60,9 +66,11 @@ interface Subject {
 
 interface Semester {
 	academicYear: string | null;
+	endDate: Date | string;
 	id: string;
 	isActive: boolean;
 	name: string;
+	startDate: Date | string;
 	subjects: Subject[];
 	totalCredits: number;
 }
@@ -75,7 +83,6 @@ export default function AdminDashboard() {
 	const createSemester = useAdminCreateSemester();
 	const updateSemester = useAdminUpdateSemester();
 	const deleteSemester = useAdminDeleteSemester();
-	const setActiveSemesters = useAdminSetActiveSemesters();
 
 	if (isLoading) {
 		return <div>Loading...</div>;
@@ -84,7 +91,8 @@ export default function AdminDashboard() {
 	const handleSaveSemester = async (values: {
 		name: string;
 		academicYear?: string;
-		isActive: boolean;
+		startDate: Date;
+		endDate: Date;
 	}) => {
 		try {
 			if (editingSemester) {
@@ -107,18 +115,6 @@ export default function AdminDashboard() {
 			toast.success("Semester deleted successfully");
 		} catch {
 			toast.error("Failed to delete semester");
-		}
-	};
-
-	const handleToggleActive = async (id: string, currentStatus: boolean) => {
-		try {
-			await setActiveSemesters.mutateAsync({
-				ids: [id],
-				active: !currentStatus,
-			});
-			toast.success(`Semester ${currentStatus ? "deactivated" : "activated"}`);
-		} catch {
-			toast.error("Failed to update status");
 		}
 	};
 
@@ -155,6 +151,10 @@ export default function AdminDashboard() {
 											<Badge variant={sem.isActive ? "default" : "secondary"}>
 												{sem.isActive ? "Active" : "Inactive"}
 											</Badge>
+											<span className="text-muted-foreground text-xs">
+												{format(new Date(sem.startDate), "MMM yyyy")} -{" "}
+												{format(new Date(sem.endDate), "MMM yyyy")}
+											</span>
 										</div>
 										<div className="flex items-center gap-2 text-muted-foreground text-sm">
 											<span>{sem.subjects.length} Subjects</span>
@@ -170,21 +170,6 @@ export default function AdminDashboard() {
 												Subjects for {sem.name}
 											</h4>
 											<div className="flex items-center gap-2">
-												<div className="mr-4 flex items-center gap-2">
-													<Label
-														className="text-xs"
-														htmlFor={`active-${sem.id}`}
-													>
-														Active
-													</Label>
-													<Switch
-														checked={sem.isActive}
-														id={`active-${sem.id}`}
-														onCheckedChange={() =>
-															handleToggleActive(sem.id, sem.isActive)
-														}
-													/>
-												</div>
 												<Button
 													onClick={() => {
 														setEditingSemester(sem);
@@ -240,6 +225,48 @@ export default function AdminDashboard() {
 	);
 }
 
+function DatePickerField({
+	label,
+	value,
+	onChange,
+	error,
+}: {
+	label: string;
+	value: Date;
+	onChange: (date: Date) => void;
+	error?: string;
+}) {
+	return (
+		<div className="space-y-2">
+			<Label>{label}</Label>
+			<Popover>
+				<PopoverTrigger
+					render={
+						<Button
+							className={cn(
+								"w-full justify-start text-left font-normal",
+								!value && "text-muted-foreground"
+							)}
+							variant="outline"
+						>
+							<CalendarIcon className="mr-2 h-4 w-4" />
+							{value ? format(value, "PPP") : <span>Pick a date</span>}
+						</Button>
+					}
+				/>
+				<PopoverContent align="start" className="w-auto p-0">
+					<Calendar
+						mode="single"
+						onSelect={(date) => date && onChange(date)}
+						selected={value}
+					/>
+				</PopoverContent>
+			</Popover>
+			{error && <p className="text-destructive text-xs">{error}</p>}
+		</div>
+	);
+}
+
 function SemesterForm({
 	initialValues,
 	onSubmit,
@@ -250,7 +277,8 @@ function SemesterForm({
 	onSubmit: (values: {
 		name: string;
 		academicYear?: string;
-		isActive: boolean;
+		startDate: Date;
+		endDate: Date;
 	}) => void;
 	onCancel: () => void;
 	isLoading: boolean;
@@ -259,9 +287,24 @@ function SemesterForm({
 		defaultValues: {
 			name: initialValues?.name ?? "",
 			academicYear: initialValues?.academicYear ?? "",
-			isActive: initialValues?.isActive ?? false,
+			startDate: initialValues?.startDate
+				? new Date(initialValues.startDate)
+				: new Date(),
+			endDate: initialValues?.endDate
+				? new Date(initialValues.endDate)
+				: addMonths(new Date(), 4),
 		},
 		onSubmit: ({ value }) => onSubmit(value),
+		validators: {
+			onChange: ({ value }) => {
+				if (value.endDate <= value.startDate) {
+					return {
+						endDate: "End date must be after start date",
+					};
+				}
+				return;
+			},
+		},
 	});
 
 	return (
@@ -310,20 +353,33 @@ function SemesterForm({
 					)}
 				</form.Field>
 			</div>
-			<div className="flex items-center gap-2">
-				<form.Field name="isActive">
+
+			<div className="grid grid-cols-2 gap-4">
+				<form.Field name="startDate">
 					{(field) => (
-						<>
-							<Switch
-								checked={field.state.value}
-								id="isActive"
-								onCheckedChange={(checked) => field.handleChange(checked)}
-							/>
-							<Label htmlFor="isActive">Active Semester</Label>
-						</>
+						<DatePickerField
+							label="Start Date"
+							onChange={(date) => field.handleChange(date)}
+							value={field.state.value}
+						/>
+					)}
+				</form.Field>
+				<form.Field name="endDate">
+					{(field) => (
+						<DatePickerField
+							error={
+								field.state.meta.errors[0]
+									? String(field.state.meta.errors[0])
+									: undefined
+							}
+							label="End Date"
+							onChange={(date) => field.handleChange(date)}
+							value={field.state.value}
+						/>
 					)}
 				</form.Field>
 			</div>
+
 			<div className="flex justify-end gap-2 pt-4">
 				<Button onClick={onCancel} type="button" variant="outline">
 					Cancel

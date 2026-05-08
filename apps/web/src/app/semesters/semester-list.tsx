@@ -11,7 +11,7 @@ import {
 } from "@ams/ui/components/card";
 import { Skeleton } from "@ams/ui/components/skeleton";
 import { cn } from "@ams/ui/lib/utils";
-import { Calendar, ExternalLink } from "lucide-react";
+import { Calendar, ExternalLink, Lock } from "lucide-react";
 import Link from "next/link";
 import { useSemesters } from "@/hooks/use-semesters";
 
@@ -64,6 +64,11 @@ export default function SemesterList() {
 													Active
 												</Badge>
 											) : null}
+											{semester.isLocked ? (
+												<Badge variant="secondary">
+													<Lock className="mr-1 h-3 w-3" /> Locked
+												</Badge>
+											) : null}
 										</div>
 									</div>
 								</div>
@@ -86,7 +91,7 @@ export default function SemesterList() {
 											Status
 										</p>
 										<p className="font-medium text-muted-foreground text-sm">
-											{semester.isActive ? "In Progress" : "Completed"}
+											{getSemesterStatusLabel(semester)}
 										</p>
 									</div>
 								</div>
@@ -113,10 +118,21 @@ interface SemesterSummary {
 	academicYear: string | null;
 	id: string;
 	isActive: boolean;
+	isLocked: boolean;
 	name: string;
 	targets: {
 		targetSGPA: string | null;
 	}[];
+}
+
+function getSemesterStatusLabel(semester: SemesterSummary) {
+	if (semester.isLocked) {
+		return "Upcoming";
+	}
+	if (semester.isActive) {
+		return "In Progress";
+	}
+	return "Completed";
 }
 
 function SemesterListSkeleton() {
