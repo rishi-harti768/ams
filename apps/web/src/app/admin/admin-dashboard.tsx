@@ -55,6 +55,7 @@ interface Subject {
 	maxInternalMarks: number;
 	name: string;
 	semesterId: string;
+	subjectCode: string;
 }
 
 interface Semester {
@@ -350,6 +351,7 @@ function SubjectList({
 	const deleteSubject = useAdminDeleteSubject();
 
 	const handleSaveSubject = async (values: {
+		subjectCode: string;
 		name: string;
 		creditHours: number;
 		maxInternalMarks: number;
@@ -385,6 +387,7 @@ function SubjectList({
 				<Table>
 					<TableHeader>
 						<TableRow>
+							<TableHead className="w-[120px]">Code</TableHead>
 							<TableHead>Subject Name</TableHead>
 							<TableHead>Credits</TableHead>
 							<TableHead>Max Internal</TableHead>
@@ -397,7 +400,7 @@ function SubjectList({
 							<TableRow>
 								<TableCell
 									className="h-24 text-center text-muted-foreground"
-									colSpan={5}
+									colSpan={6}
 								>
 									No subjects added yet.
 								</TableCell>
@@ -405,6 +408,9 @@ function SubjectList({
 						) : (
 							subjects.map((sub) => (
 								<TableRow key={sub.id}>
+									<TableCell className="font-mono text-xs">
+										{sub.subjectCode}
+									</TableCell>
 									<TableCell className="font-medium">{sub.name}</TableCell>
 									<TableCell>{sub.creditHours}</TableCell>
 									<TableCell>{sub.maxInternalMarks}</TableCell>
@@ -476,6 +482,7 @@ function SubjectForm({
 }: {
 	initialValues: Subject | null;
 	onSubmit: (values: {
+		subjectCode: string;
 		name: string;
 		creditHours: number;
 		maxInternalMarks: number;
@@ -486,6 +493,7 @@ function SubjectForm({
 }) {
 	const form = useForm({
 		defaultValues: {
+			subjectCode: initialValues?.subjectCode ?? "",
 			name: initialValues?.name ?? "",
 			creditHours: initialValues?.creditHours ?? 3,
 			maxInternalMarks: initialValues?.maxInternalMarks ?? 50,
@@ -502,23 +510,43 @@ function SubjectForm({
 				form.handleSubmit();
 			}}
 		>
-			<div className="space-y-2">
-				<Label htmlFor="sub-name">Subject Name</Label>
-				<form.Field
-					name="name"
-					validators={{
-						onChange: ({ value }) => (value ? undefined : "Required"),
-					}}
-				>
-					{(field) => (
-						<Input
-							id="sub-name"
-							onChange={(e) => field.handleChange(e.target.value)}
-							placeholder="e.g. Mathematics"
-							value={field.state.value}
-						/>
-					)}
-				</form.Field>
+			<div className="grid grid-cols-2 gap-4">
+				<div className="space-y-2">
+					<Label htmlFor="sub-code">Subject Code</Label>
+					<form.Field
+						name="subjectCode"
+						validators={{
+							onChange: ({ value }) => (value ? undefined : "Required"),
+						}}
+					>
+						{(field) => (
+							<Input
+								id="sub-code"
+								onChange={(e) => field.handleChange(e.target.value)}
+								placeholder="e.g. CS101"
+								value={field.state.value}
+							/>
+						)}
+					</form.Field>
+				</div>
+				<div className="space-y-2">
+					<Label htmlFor="sub-name">Subject Name</Label>
+					<form.Field
+						name="name"
+						validators={{
+							onChange: ({ value }) => (value ? undefined : "Required"),
+						}}
+					>
+						{(field) => (
+							<Input
+								id="sub-name"
+								onChange={(e) => field.handleChange(e.target.value)}
+								placeholder="e.g. Mathematics"
+								value={field.state.value}
+							/>
+						)}
+					</form.Field>
+				</div>
 			</div>
 			<div className="grid grid-cols-3 gap-4">
 				<div className="space-y-2">

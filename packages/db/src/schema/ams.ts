@@ -54,6 +54,7 @@ export const subject = pgTable(
 		semesterId: uuid("semester_id")
 			.notNull()
 			.references(() => semester.id, { onDelete: "cascade" }),
+		subjectCode: text("subject_code").notNull(),
 		name: text("name").notNull(),
 		creditHours: integer("credit_hours").notNull(),
 		maxInternalMarks: integer("max_internal_marks").notNull(),
@@ -64,7 +65,10 @@ export const subject = pgTable(
 			.$onUpdate(() => /* @__PURE__ */ new Date())
 			.notNull(),
 	},
-	(table) => [index("subject_semesterId_idx").on(table.semesterId)]
+	(table) => [
+		index("subject_semesterId_idx").on(table.semesterId),
+		uniqueIndex("subject_subject_code_idx").on(table.subjectCode),
+	]
 );
 
 // Score - belongs to subject and user

@@ -89,6 +89,7 @@ export const adminRouter = o.router({
 		.input(
 			z.object({
 				semesterId: z.string().uuid(),
+				subjectCode: z.string().min(1),
 				name: z.string().min(1),
 				creditHours: z.number().int().min(1),
 				maxInternalMarks: z.number().int().min(0).default(50),
@@ -100,6 +101,7 @@ export const adminRouter = o.router({
 				.insert(subject)
 				.values({
 					semesterId: input.semesterId,
+					subjectCode: input.subjectCode,
 					name: input.name,
 					creditHours: input.creditHours,
 					maxInternalMarks: input.maxInternalMarks,
@@ -113,6 +115,7 @@ export const adminRouter = o.router({
 		.input(
 			z.object({
 				id: z.string().uuid(),
+				subjectCode: z.string().min(1).optional(),
 				name: z.string().min(1).optional(),
 				creditHours: z.number().int().min(1).optional(),
 				maxInternalMarks: z.number().int().min(0).optional(),
@@ -123,6 +126,7 @@ export const adminRouter = o.router({
 			const [updatedSubject] = await db
 				.update(subject)
 				.set({
+					...(input.subjectCode && { subjectCode: input.subjectCode }),
 					...(input.name && { name: input.name }),
 					...(input.creditHours !== undefined && {
 						creditHours: input.creditHours,
