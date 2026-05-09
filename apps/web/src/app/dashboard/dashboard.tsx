@@ -38,7 +38,7 @@ export default function Dashboard() {
 
 	// Guard: Redirect to onboarding if profile is missing
 	useEffect(() => {
-		if (!isLoading && !isFetching && data && !data.profile) {
+		if (!(isLoading || isFetching) && data && !data.profile) {
 			router.replace("/onboarding");
 		}
 	}, [data, isLoading, isFetching, router]);

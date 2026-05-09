@@ -12,6 +12,22 @@
  * | < 45             | F     | 0           |
  */
 
+export type SemesterStatus = "completed" | "ongoing" | "upcoming";
+
+export function calculateSemesterStatus(
+	startDate: Date,
+	endDate: Date
+): SemesterStatus {
+	const now = new Date();
+	if (now < startDate) {
+		return "upcoming";
+	}
+	if (now > endDate) {
+		return "completed";
+	}
+	return "ongoing";
+}
+
 export function calculateGradePoint(totalPercentage: number): number {
 	if (totalPercentage >= 90) {
 		return 10;

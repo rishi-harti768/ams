@@ -1,3 +1,4 @@
+import { calculateSemesterStatus } from "@ams/ams";
 import { db } from "@ams/db";
 import { semester, subject } from "@ams/db/schema/ams";
 import { eq } from "drizzle-orm";
@@ -14,11 +15,9 @@ export const adminRouter = o.router({
 			orderBy: (semester, { desc }) => [desc(semester.createdAt)],
 		});
 
-		const now = new Date();
-
 		return semesters.map((s) => ({
 			...s,
-			isActive: now >= s.startDate && now <= s.endDate,
+			status: calculateSemesterStatus(s.startDate, s.endDate),
 			totalCredits: s.subjects.reduce((acc, sub) => acc + sub.creditHours, 0),
 		}));
 	}),

@@ -88,14 +88,19 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 						<h1 className="font-bold text-4xl tracking-tight">
 							{semester.name}
 						</h1>
-						{semester.isActive ? (
+						{semester.status === "ongoing" ? (
 							<Badge className="h-6 border-primary/20 bg-primary/10 text-primary hover:bg-primary/20">
-								Active
+								Ongoing
 							</Badge>
 						) : null}
-						{semester.isLocked ? (
+						{semester.status === "completed" ? (
+							<Badge className="h-6" variant="outline">
+								Completed
+							</Badge>
+						) : null}
+						{semester.status === "upcoming" ? (
 							<Badge className="h-6" variant="secondary">
-								<Lock className="mr-1 h-3 w-3" /> Locked (Read-Only)
+								<Lock className="mr-1 h-3 w-3" /> Upcoming (Read-Only)
 							</Badge>
 						) : null}
 					</div>
@@ -139,7 +144,7 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 						<div className="grid grid-cols-1 gap-6 md:grid-cols-2">
 							{subjects.map((subject: SemesterSubject) => (
 								<SubjectCard
-									isLocked={!!semester.isLocked}
+									isLocked={semester.status === "upcoming"}
 									key={subject.id}
 									projection={projections?.find(
 										(p: { subjectId: string }) => p.subjectId === subject.id
@@ -230,7 +235,7 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 						</CardFooter>
 					</Card>
 
-					{semester.isActive ? (
+					{semester.status === "ongoing" ? (
 						<div className="flex gap-4 rounded-xl border border-emerald-100 bg-emerald-50 p-5">
 							<CheckCircle2
 								className="shrink-0 text-emerald-500"
@@ -238,7 +243,7 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 							/>
 							<div>
 								<h4 className="font-bold text-emerald-900 text-sm">
-									Current Semester
+									Ongoing Semester
 								</h4>
 								<p className="mt-1 text-emerald-700 text-xs leading-relaxed">
 									This is your active semester. All dashboard calculations and
@@ -248,7 +253,7 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 						</div>
 					) : null}
 
-					{semester.isLocked ? (
+					{semester.status === "upcoming" ? (
 						<div className="flex gap-4 rounded-xl border border-amber-100 bg-amber-50 p-5">
 							<Lock
 								className="shrink-0 text-amber-500"
@@ -256,7 +261,7 @@ export default function SemesterDetail({ id }: SemesterDetailProps) {
 							/>
 							<div>
 								<h4 className="font-bold text-amber-900 text-sm">
-									Future Semester
+									Upcoming Semester
 								</h4>
 								<p className="mt-1 text-amber-700 text-xs leading-relaxed">
 									This semester hasn't started yet. You can view subjects and

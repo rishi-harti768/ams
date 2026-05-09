@@ -68,9 +68,9 @@ interface Semester {
 	academicYear: string | null;
 	endDate: Date | string;
 	id: string;
-	isActive: boolean;
 	name: string;
 	startDate: Date | string;
+	status: "completed" | "ongoing" | "upcoming";
 	subjects: Subject[];
 	totalCredits: number;
 }
@@ -148,8 +148,19 @@ export default function AdminDashboard() {
 											{sem.academicYear && (
 												<Badge variant="outline">{sem.academicYear}</Badge>
 											)}
-											<Badge variant={sem.isActive ? "default" : "secondary"}>
-												{sem.isActive ? "Active" : "Inactive"}
+											<Badge
+												variant={
+													(
+														{
+															ongoing: "default",
+															upcoming: "secondary",
+															completed: "outline",
+														} as const
+													)[sem.status]
+												}
+											>
+												{sem.status.charAt(0).toUpperCase() +
+													sem.status.slice(1)}
 											</Badge>
 											<span className="text-muted-foreground text-xs">
 												{format(new Date(sem.startDate), "MMM yyyy")} -{" "}

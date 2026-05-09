@@ -3,6 +3,7 @@ import {
 	calculateRequiredEndsem,
 	calculateRequiredSemesterCGPA,
 	calculateSemesterCGPA,
+	calculateSemesterStatus,
 	type SubjectWithScore,
 } from "@ams/ams";
 import { db } from "@ams/db";
@@ -58,13 +59,12 @@ export const cgpaRouter = o.router({
 				);
 
 				const target = sem.targets[0];
-				const now = new Date();
-				const isActive = now >= sem.startDate && now <= sem.endDate;
+				const status = calculateSemesterStatus(sem.startDate, sem.endDate);
 
 				return {
 					id: sem.id,
 					name: sem.name,
-					isActive,
+					status,
 					cgpa,
 					totalCredits,
 					targetCGPA: target?.targetSGPA ? Number(target.targetSGPA) : null,
@@ -78,7 +78,7 @@ export const cgpaRouter = o.router({
 				}))
 			);
 
-			const activeSemester = semesterData.find((s) => s.isActive);
+			const activeSemester = semesterData.find((s) => s.status === "ongoing");
 
 			return {
 				profile: profile || null,
@@ -273,10 +273,10 @@ export const cgpaRouter = o.router({
 			});
 
 			const totalSemestersCount = allSemesters.length;
-			const now = new Date();
-			const activeIndex = allSemesters.findIndex(
-				(s) => now >= s.startDate && now <= s.endDate
-			);
+			const activeIndex = allSemesters.findIndex((s) => {
+				const status = calculateSemesterStatus(s.startDate, s.endDate);
+				return status === "ongoing";
+			});
 			const currentSemesterIndex = activeIndex === -1 ? 1 : activeIndex + 1;
 
 			const remainingSemesters = Math.max(

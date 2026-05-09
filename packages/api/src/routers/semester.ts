@@ -1,3 +1,4 @@
+import { calculateSemesterStatus } from "@ams/ams";
 import { db } from "@ams/db";
 import { semester } from "@ams/db/schema/ams";
 import { desc, eq } from "drizzle-orm";
@@ -18,12 +19,9 @@ export const semesterRouter = o.router({
 				},
 			});
 
-			const now = new Date();
-
 			return semesters.map((s) => ({
 				...s,
-				isActive: now >= s.startDate && now <= s.endDate,
-				isLocked: now < s.startDate,
+				status: calculateSemesterStatus(s.startDate, s.endDate),
 			}));
 		}),
 
@@ -52,12 +50,9 @@ export const semesterRouter = o.router({
 				return null;
 			}
 
-			const now = new Date();
-
 			return {
 				...item,
-				isActive: now >= item.startDate && now <= item.endDate,
-				isLocked: now < item.startDate,
+				status: calculateSemesterStatus(item.startDate, item.endDate),
 			};
 		}),
 });

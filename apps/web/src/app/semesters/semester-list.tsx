@@ -50,7 +50,9 @@ export default function SemesterList() {
 						<Card
 							className={cn(
 								"relative transition-all hover:shadow-md",
-								semester.isActive ? "border-primary ring-1 ring-primary/20" : ""
+								semester.status === "ongoing"
+									? "border-primary ring-1 ring-primary/20"
+									: ""
 							)}
 							key={semester.id}
 						>
@@ -59,12 +61,12 @@ export default function SemesterList() {
 									<div className="flex flex-col gap-1">
 										<div className="flex items-center gap-2">
 											<CardTitle className="text-xl">{semester.name}</CardTitle>
-											{semester.isActive ? (
+											{semester.status === "ongoing" ? (
 												<Badge className="border-primary/20 bg-primary/10 text-primary hover:bg-primary/20">
-													Active
+													Ongoing
 												</Badge>
 											) : null}
-											{semester.isLocked ? (
+											{semester.status === "upcoming" ? (
 												<Badge variant="secondary">
 													<Lock className="mr-1 h-3 w-3" /> Locked
 												</Badge>
@@ -117,22 +119,24 @@ export default function SemesterList() {
 interface SemesterSummary {
 	academicYear: string | null;
 	id: string;
-	isActive: boolean;
-	isLocked: boolean;
 	name: string;
+	status: "completed" | "ongoing" | "upcoming";
 	targets: {
 		targetSGPA: string | null;
 	}[];
 }
 
 function getSemesterStatusLabel(semester: SemesterSummary) {
-	if (semester.isLocked) {
-		return "Upcoming";
+	switch (semester.status) {
+		case "upcoming":
+			return "Upcoming";
+		case "ongoing":
+			return "Ongoing";
+		case "completed":
+			return "Completed";
+		default:
+			return "Unknown";
 	}
-	if (semester.isActive) {
-		return "In Progress";
-	}
-	return "Completed";
 }
 
 function SemesterListSkeleton() {
