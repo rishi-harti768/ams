@@ -1,8 +1,13 @@
+import { calculateSemesterStatus } from "@ams/ams";
 import { auth } from "@ams/auth";
+import { db } from "@ams/db";
+import { semester } from "@ams/db/schema/ams";
 import { Skeleton } from "@ams/ui/components/skeleton";
+import { eq } from "drizzle-orm";
 import { headers } from "next/headers";
 import { notFound, redirect } from "next/navigation";
 import { Suspense } from "react";
+import LockedSemester from "./locked-semester";
 import SemesterDetail from "./semester-detail";
 
 export async function generateMetadata({
@@ -46,6 +51,20 @@ async function SemesterContent({
 
 	if (!session?.user) {
 		redirect("/login");
+	}
+
+	const sem = await db.query.semester.findFirst({
+		where: eq(semester.id, id),
+	});
+
+	if (!sem) {
+		notFound();
+	}
+
+	const status = calculateSemesterStatus(sem.startDate, sem.endDate);
+
+	if (status === "upcoming") {
+		return <LockedSemester />;
 	}
 
 	return (

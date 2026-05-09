@@ -189,9 +189,20 @@ export function calculateRequiredSemesterCGPA(
 	targetCumulativeCGPA: number,
 	remainingSemesters: number,
 	averageCreditsPerSemester: number
-): { required: number; achievable: boolean } {
+): { required: number; achievable: boolean; maxPossibleCGPA: number } {
 	if (currentCumulativeCGPA >= targetCumulativeCGPA) {
-		return { required: 0, achievable: true };
+		const targetTotalCredits =
+			currentTotalCredits + remainingSemesters * averageCreditsPerSemester;
+		const maxPossibleWeightedCGPA =
+			currentTotalCredits * currentCumulativeCGPA +
+			remainingSemesters * averageCreditsPerSemester * 10;
+		const maxPossibleCGPA = maxPossibleWeightedCGPA / targetTotalCredits;
+
+		return {
+			required: 0,
+			achievable: true,
+			maxPossibleCGPA: Number(maxPossibleCGPA.toFixed(2)),
+		};
 	}
 
 	const targetTotalCredits =
@@ -205,8 +216,14 @@ export function calculateRequiredSemesterCGPA(
 		requiredFutureWeightedCGPA /
 		(remainingSemesters * averageCreditsPerSemester);
 
+	// Calculate maximum possible CGPA assuming straight 10.0s in all remaining credits
+	const maxPossibleWeightedCGPA =
+		currentWeightedCGPA + remainingSemesters * averageCreditsPerSemester * 10;
+	const maxPossibleCGPA = maxPossibleWeightedCGPA / targetTotalCredits;
+
 	return {
 		required: Number(requiredSemesterCGPA.toFixed(2)),
 		achievable: requiredSemesterCGPA <= 10,
+		maxPossibleCGPA: Number(maxPossibleCGPA.toFixed(2)),
 	};
 }
