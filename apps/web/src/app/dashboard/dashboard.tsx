@@ -8,8 +8,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@ams/ui/components/card";
-import { CGPACard } from "@ams/ui/components/cgpa-card";
-import { CGPAChart } from "@ams/ui/components/cgpa-chart";
 import { Skeleton } from "@ams/ui/components/skeleton";
 import {
 	ArrowRight,
@@ -22,7 +20,8 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
-
+import { CGPACard } from "@/components/cgpa-card";
+import { CGPAChart } from "@/components/cgpa-chart";
 import {
 	useCGPAProjection,
 	useCumulativeCGPAProjection,

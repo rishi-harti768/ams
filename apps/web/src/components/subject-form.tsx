@@ -1,38 +1,38 @@
 "use client";
 
+import { Button } from "@ams/ui/components/button";
+import { Input } from "@ams/ui/components/input";
+import { Label } from "@ams/ui/components/label";
+import { cn } from "@ams/ui/lib/utils";
 import { useForm } from "@tanstack/react-form";
-import { Button } from "./button";
-import { Checkbox } from "./checkbox";
-import { Input } from "./input";
-import { Label } from "./label";
 
-export interface SemesterFormValues {
-	academicYear?: string;
-	isActive: boolean;
+export interface SubjectFormValues {
+	creditHours: number;
+	maxEndsemMarks: number;
+	maxInternalMarks: number;
 	name: string;
-	targetCGPA?: number;
 }
 
-interface SemesterFormProps {
-	initialValues?: Partial<SemesterFormValues>;
+interface SubjectFormProps {
+	initialValues?: Partial<SubjectFormValues>;
 	isLoading?: boolean;
 	onCancel?: () => void;
-	onSubmit: (values: SemesterFormValues) => void;
+	onSubmit: (values: SubjectFormValues) => void;
 }
 
-export function SemesterForm({
+export function SubjectForm({
 	initialValues,
 	onSubmit,
 	onCancel,
 	isLoading,
-}: SemesterFormProps) {
+}: SubjectFormProps) {
 	const form = useForm({
 		defaultValues: {
 			name: initialValues?.name ?? "",
-			academicYear: initialValues?.academicYear ?? "",
-			isActive: initialValues?.isActive ?? false,
-			targetCGPA: initialValues?.targetCGPA ?? 8.0,
-		} as SemesterFormValues,
+			creditHours: initialValues?.creditHours ?? 3,
+			maxInternalMarks: initialValues?.maxInternalMarks ?? 40,
+			maxEndsemMarks: initialValues?.maxEndsemMarks ?? 60,
+		} as SubjectFormValues,
 		onSubmit: ({ value }) => {
 			onSubmit(value);
 		},
@@ -59,15 +59,20 @@ export function SemesterForm({
 							className="font-semibold text-[11px] uppercase"
 							htmlFor={field.name}
 						>
-							Semester Name
+							Subject Name
 						</Label>
 						<Input
-							className="h-10 px-3 text-sm"
+							aria-invalid={!!field.state.meta.errors.length}
+							className={cn(
+								"h-10 px-3 text-sm",
+								field.state.meta.errors.length > 0 &&
+									"border-destructive focus-visible:ring-destructive/20"
+							)}
 							id={field.name}
 							name={field.name}
 							onBlur={field.handleBlur}
 							onChange={(e) => field.handleChange(e.target.value)}
-							placeholder="e.g. Fall 2025"
+							placeholder="e.g. Advanced Calculus"
 							value={field.state.value}
 						/>
 						{field.state.meta.errors.length > 0 && (
@@ -79,36 +84,12 @@ export function SemesterForm({
 				)}
 			</form.Field>
 
-			<div className="grid grid-cols-2 gap-4">
-				<form.Field name="academicYear">
-					{(field) => (
-						<div className="grid gap-2">
-							<Label
-								className="font-semibold text-[11px] uppercase"
-								htmlFor={field.name}
-							>
-								Academic Year
-							</Label>
-							<Input
-								className="h-10"
-								id={field.name}
-								name={field.name}
-								onBlur={field.handleBlur}
-								onChange={(e) => field.handleChange(e.target.value)}
-								placeholder="e.g. 2025-26"
-								value={field.state.value}
-							/>
-						</div>
-					)}
-				</form.Field>
-
+			<div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
 				<form.Field
-					name="targetCGPA"
+					name="creditHours"
 					validators={{
 						onChange: ({ value }) =>
-							value && (value < 0 || value > 10)
-								? "Must be between 0 and 10"
-								: undefined,
+							value <= 0 ? "Must be at least 1" : undefined,
 					}}
 				>
 					{(field) => (
@@ -117,48 +98,83 @@ export function SemesterForm({
 								className="font-semibold text-[11px] uppercase"
 								htmlFor={field.name}
 							>
-								Target CGPA
+								Credits
 							</Label>
 							<Input
 								className="h-10"
 								id={field.name}
-								max="10"
-								min="0"
+								min="1"
 								onBlur={field.handleBlur}
 								onChange={(e) =>
-									field.handleChange(Number.parseFloat(e.target.value))
+									field.handleChange(Number.parseInt(e.target.value, 10))
 								}
-								step="0.01"
 								type="number"
 								value={field.state.value}
 							/>
-							{field.state.meta.errors.length > 0 && (
-								<p className="font-medium text-[10px] text-rose-500">
-									{field.state.meta.errors.join(", ")}
-								</p>
-							)}
+						</div>
+					)}
+				</form.Field>
+
+				<form.Field
+					name="maxInternalMarks"
+					validators={{
+						onChange: ({ value }) =>
+							value <= 0 ? "Must be at least 1" : undefined,
+					}}
+				>
+					{(field) => (
+						<div className="grid gap-2">
+							<Label
+								className="font-semibold text-[11px] uppercase"
+								htmlFor={field.name}
+							>
+								Max Internal
+							</Label>
+							<Input
+								className="h-10"
+								id={field.name}
+								min="1"
+								onBlur={field.handleBlur}
+								onChange={(e) =>
+									field.handleChange(Number.parseInt(e.target.value, 10))
+								}
+								type="number"
+								value={field.state.value}
+							/>
+						</div>
+					)}
+				</form.Field>
+
+				<form.Field
+					name="maxEndsemMarks"
+					validators={{
+						onChange: ({ value }) =>
+							value <= 0 ? "Must be at least 1" : undefined,
+					}}
+				>
+					{(field) => (
+						<div className="grid gap-2">
+							<Label
+								className="font-semibold text-[11px] uppercase"
+								htmlFor={field.name}
+							>
+								Max EndSem
+							</Label>
+							<Input
+								className="h-10"
+								id={field.name}
+								min="1"
+								onBlur={field.handleBlur}
+								onChange={(e) =>
+									field.handleChange(Number.parseInt(e.target.value, 10))
+								}
+								type="number"
+								value={field.state.value}
+							/>
 						</div>
 					)}
 				</form.Field>
 			</div>
-
-			<form.Field name="isActive">
-				{(field) => (
-					<div className="flex items-center space-x-2">
-						<Checkbox
-							checked={field.state.value}
-							id={field.name}
-							onCheckedChange={(checked) => field.handleChange(!!checked)}
-						/>
-						<Label
-							className="font-medium text-sm leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
-							htmlFor={field.name}
-						>
-							Set as Active Semester
-						</Label>
-					</div>
-				)}
-			</form.Field>
 
 			<div className="flex items-center justify-end gap-3 border-t pt-6">
 				{onCancel && (
@@ -173,7 +189,7 @@ export function SemesterForm({
 					</Button>
 				)}
 				<Button className="h-10 px-10" disabled={isLoading} type="submit">
-					{isLoading ? "Saving..." : "Save Semester"}
+					{isLoading ? "Saving..." : "Save Subject"}
 				</Button>
 			</div>
 		</form>

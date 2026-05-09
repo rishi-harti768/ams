@@ -1,7 +1,12 @@
+import {
+	Card,
+	CardContent,
+	CardHeader,
+	CardTitle,
+} from "@ams/ui/components/card";
 import { cn } from "@ams/ui/lib/utils";
 import { Minus, TrendingDown, TrendingUp } from "lucide-react";
 import type * as React from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "./card";
 
 interface CGPACardProps extends React.ComponentProps<typeof Card> {
 	description?: string;

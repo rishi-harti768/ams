@@ -2,9 +2,9 @@
 
 import { cn } from "@ams/ui/lib/utils";
 import { useForm } from "@tanstack/react-form";
-import { Button } from "./button";
-import { Input } from "./input";
-import { Label } from "./label";
+import { Button } from "../../../../packages/ui/src/components/button";
+import { Input } from "../../../../packages/ui/src/components/input";
+import { Label } from "../../../../packages/ui/src/components/label";
 
 interface TargetFormProps {
 	description?: string;

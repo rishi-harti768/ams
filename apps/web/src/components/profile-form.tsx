@@ -1,9 +1,9 @@
 "use client";
 
+import { Button } from "@ams/ui/components/button";
+import { Label } from "@ams/ui/components/label";
+import { Slider } from "@ams/ui/components/slider";
 import { useForm } from "@tanstack/react-form";
-import { Button } from "./button";
-import { Label } from "./label";
-import { Slider } from "./slider";
 
 export interface ProfileFormValues {
 	targetCumulativeCGPA?: number;

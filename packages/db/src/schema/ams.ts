@@ -20,7 +20,7 @@ export const academicProfile = pgTable(
 			.notNull()
 			.references(() => user.id, { onDelete: "cascade" }),
 		targetCumulativeCGPA: decimal("target_cumulative_cgpa", {
-			precision: 3,
+			precision: 4,
 			scale: 2,
 		}),
 		createdAt: timestamp("created_at").defaultNow().notNull(),
@@ -84,7 +84,7 @@ export const score = pgTable(
 			.references(() => subject.id, { onDelete: "cascade" }),
 		internalMarks: decimal("internal_marks", { precision: 5, scale: 2 }),
 		endsemMarks: decimal("endsem_marks", { precision: 5, scale: 2 }),
-		gradePoint: decimal("grade_point", { precision: 3, scale: 2 }),
+		gradePoint: decimal("grade_point", { precision: 4, scale: 2 }),
 		updatedAt: timestamp("updated_at")
 			.defaultNow()
 			.$onUpdate(() => /* @__PURE__ */ new Date())

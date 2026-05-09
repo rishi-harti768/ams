@@ -7,8 +7,7 @@ import {
 	ChevronLeftIcon,
 	ChevronRightIcon,
 } from "lucide-react";
-import type * as React from "react";
-import { useEffect, useRef } from "react";
+import React from "react";
 import {
 	type DayButton,
 	DayPicker,
@@ -35,7 +34,7 @@ function Calendar({
 		<DayPicker
 			captionLayout={captionLayout}
 			className={cn(
-				"group/calendar bg-background in-data-[slot=card-content]:bg-transparent in-data-[slot=popover-content]:bg-transparent p-2 [--cell-size:--spacing(7)]",
+				"group/calendar bg-background in-data-[slot=card-content]:bg-transparent in-data-[slot=popover-content]:bg-transparent p-3 [--cell-radius:var(--radius-md)] [--cell-size:--spacing(8)]",
 				String.raw`rtl:**:[.rdp-button\_next>svg]:rotate-180`,
 				String.raw`rtl:**:[.rdp-button\_previous>svg]:rotate-180`,
 				className
@@ -191,8 +190,8 @@ function CalendarDayButton({
 }: React.ComponentProps<typeof DayButton> & { locale?: Partial<Locale> }) {
 	const defaultClassNames = getDefaultClassNames();
 
-	const ref = useRef<HTMLButtonElement>(null);
-	useEffect(() => {
+	const ref = React.useRef<HTMLButtonElement>(null);
+	React.useEffect(() => {
 		if (modifiers.focused) {
 			ref.current?.focus();
 		}

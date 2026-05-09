@@ -1,9 +1,9 @@
 "use client";
 
+import { Input } from "@ams/ui/components/input";
+import { Label } from "@ams/ui/components/label";
 import { cn } from "@ams/ui/lib/utils";
 import { useEffect, useRef, useState } from "react";
-import { Input } from "./input";
-import { Label } from "./label";
 
 interface ScoreInputProps
 	extends Omit<React.ComponentProps<typeof Input>, "value" | "onChange"> {

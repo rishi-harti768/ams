@@ -7,14 +7,11 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@ams/ui/components/card";
-import {
-	ProfileForm,
-	type ProfileFormValues,
-} from "@ams/ui/components/profile-form";
 import { Skeleton } from "@ams/ui/components/skeleton";
 import { GraduationCap } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
+import { ProfileForm, type ProfileFormValues } from "@/components/profile-form";
 import { useCreateProfile, useProfile } from "@/hooks/use-profile";
 
 export default function Onboarding() {

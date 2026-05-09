@@ -1,6 +1,13 @@
 "use client";
 
 import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@ams/ui/components/card";
+import {
 	CartesianGrid,
 	Line,
 	LineChart,
@@ -10,13 +17,6 @@ import {
 	XAxis,
 	YAxis,
 } from "recharts";
-import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "./card";
 
 interface CGPAChartProps {
 	data: {

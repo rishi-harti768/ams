@@ -47,7 +47,7 @@ export function calculateGradePoint(totalPercentage: number): number {
 	if (totalPercentage >= 50) {
 		return 5;
 	}
-	if (totalPercentage >= 45) {
+	if (totalPercentage >= 40) {
 		return 4;
 	}
 	return 0;
