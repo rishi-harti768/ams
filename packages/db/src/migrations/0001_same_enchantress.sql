@@ -1,1 +1,0 @@
-ALTER TABLE "academic_profile" ADD COLUMN "total_semesters" integer DEFAULT 8 NOT NULL;

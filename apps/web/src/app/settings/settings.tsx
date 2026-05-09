@@ -7,10 +7,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@ams/ui/components/card";
-import {
-	ProfileForm,
-	type ProfileFormValues,
-} from "@ams/ui/components/profile-form";
 import { Skeleton } from "@ams/ui/components/skeleton";
 import {
 	Tabs,
@@ -20,6 +16,7 @@ import {
 } from "@ams/ui/components/tabs";
 import { GraduationCap, Settings2, ShieldCheck, User } from "lucide-react";
 import { toast } from "sonner";
+import { ProfileForm, type ProfileFormValues } from "@/components/profile-form";
 import { useProfile, useUpdateProfile } from "@/hooks/use-profile";
 
 export default function Settings() {
@@ -68,8 +65,8 @@ export default function Settings() {
 								<CardTitle>Academic Configuration</CardTitle>
 							</div>
 							<CardDescription>
-								Update your institution details and degree targets. These
-								settings affect your dashboard projections.
+								Update your academic targets. Institution and semester details
+								are now managed by the administration.
 							</CardDescription>
 						</CardHeader>
 						<CardContent>
@@ -77,12 +74,6 @@ export default function Settings() {
 								initialValues={
 									profile
 										? {
-												institutionType: profile.institutionType as
-													| "school"
-													| "college",
-												institutionName: profile.institutionName ?? undefined,
-												currentSemester: profile.currentSemester,
-												totalSemesters: profile.totalSemesters,
 												targetCumulativeCGPA: Number(
 													profile.targetCumulativeCGPA
 												),
@@ -90,6 +81,7 @@ export default function Settings() {
 										: undefined
 								}
 								isLoading={isUpdating}
+								key={profile?.id ?? "new"}
 								onSubmit={handleSubmit}
 							/>
 						</CardContent>

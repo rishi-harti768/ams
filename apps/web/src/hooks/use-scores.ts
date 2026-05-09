@@ -69,3 +69,27 @@ export function useUpdateEndsemMarks() {
 		})
 	);
 }
+
+/**
+ * Hook to update multiple scores at once
+ */
+export function useUpdateBatchScores() {
+	const queryClient = useQueryClient();
+
+	return useMutation(
+		orpc.score.scoreUpdateBatch.mutationOptions({
+			onSuccess: (data) => {
+				toast.success("Scores updated successfully");
+				if (data && data.length > 0) {
+					// Invalidate all related data
+					queryClient.invalidateQueries({ queryKey: orpc.score.key() });
+					queryClient.invalidateQueries({ queryKey: orpc.cgpa.key() });
+					queryClient.invalidateQueries({ queryKey: orpc.subject.key() });
+				}
+			},
+			onError: (error) => {
+				toast.error(`Failed to update scores: ${error.message}`);
+			},
+		})
+	);
+}

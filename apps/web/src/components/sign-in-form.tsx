@@ -4,6 +4,7 @@ import { Label } from "@ams/ui/components/label";
 import { useForm } from "@tanstack/react-form";
 import { Loader2 } from "lucide-react";
 import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { toast } from "sonner";
 import z from "zod";
 
@@ -16,8 +17,14 @@ export default function SignInForm({
 }: {
 	onSwitchToSignUp: () => void;
 }) {
+	const { data: session, isPending } = authClient.useSession();
 	const router = useRouter();
-	const { isPending } = authClient.useSession();
+
+	useEffect(() => {
+		if (session) {
+			router.push("/dashboard");
+		}
+	}, [session, router]);
 
 	const form = useForm({
 		defaultValues: {
@@ -42,14 +49,14 @@ export default function SignInForm({
 			);
 		},
 		validators: {
-			onSubmit: z.object({
+			onChange: z.object({
 				email: z.string().email("Invalid email address"),
 				password: z.string().min(8, "Password must be at least 8 characters"),
 			}),
 		},
 	});
 
-	if (isPending) {
+	if (isPending || session) {
 		return <Loader />;
 	}
 
@@ -59,6 +66,7 @@ export default function SignInForm({
 
 			<form
 				className="flex flex-col gap-4"
+				noValidate
 				onSubmit={(e) => {
 					e.preventDefault();
 					e.stopPropagation();

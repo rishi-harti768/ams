@@ -8,8 +8,10 @@
     "start": "next start"
   },
   "dependencies": {
+    "@ams/ams": "workspace:*",
     "@ams/api": "workspace:*",
     "@ams/auth": "workspace:*",
+    "@ams/db": "workspace:*",
     "@ams/env": "workspace:*",
     "@ams/ui": "workspace:*",
     "@orpc/client": "catalog:",
@@ -21,12 +23,15 @@
     "@tanstack/react-query": "^5.90.12",
     "babel-plugin-react-compiler": "^1.0.0",
     "better-auth": "catalog:",
+    "date-fns": "^4.1.0",
     "dotenv": "catalog:",
+    "drizzle-orm": "catalog:",
     "lucide-react": "catalog:",
     "next": "catalog:",
     "next-themes": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
+    "recharts": "catalog:",
     "sonner": "catalog:",
     "zod": "catalog:"
   },

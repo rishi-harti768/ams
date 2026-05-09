@@ -1,6 +1,6 @@
 import { relations } from "drizzle-orm";
 import { boolean, index, pgTable, text, timestamp } from "drizzle-orm/pg-core";
-import { academicProfile, semester } from "./ams";
+import { academicProfile, score, semesterTarget } from "./ams";
 
 export const user = pgTable("user", {
 	id: text("id").primaryKey(),
@@ -8,6 +8,8 @@ export const user = pgTable("user", {
 	email: text("email").notNull().unique(),
 	emailVerified: boolean("email_verified").default(false).notNull(),
 	image: text("image"),
+	role: text("role"),
+	banned: boolean("banned"),
 	createdAt: timestamp("created_at").defaultNow().notNull(),
 	updatedAt: timestamp("updated_at")
 		.defaultNow()
@@ -78,7 +80,8 @@ export const userRelations = relations(user, ({ many, one }) => ({
 	sessions: many(session),
 	accounts: many(account),
 	academicProfile: one(academicProfile),
-	semesters: many(semester),
+	scores: many(score),
+	semesterTargets: many(semesterTarget),
 }));
 
 export const sessionRelations = relations(session, ({ one }) => ({
