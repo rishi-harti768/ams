@@ -67,31 +67,43 @@ export const semesterRouter = o.router({
 				};
 			});
 
-			// Calculate global projection
+			// We treat 'Ongoing' as part of 'Earned' for the sake of projecting future needs
+			// BUT we also want to know what the target is for the ongoing semester itself.
+			// The user's request: "ongoing semester SGPA must be part of target calculation"
+			// and "automatically update the upcoming semesters SGPA targets"
+
 			const currentCumulativeCGPA = calculateCumulativeCGPA(
-				semesterData.map((s) => ({
-					cgpa: s.sgpa,
-					totalCredits: s.totalCredits,
-				}))
+				semesterData
+					.filter(
+						(s) =>
+							s.status === "completed" ||
+							(s.status === "ongoing" && s.sgpa !== null)
+					)
+					.map((s) => ({
+						cgpa: s.sgpa,
+						totalCredits: s.totalCredits,
+					}))
 			);
 
-			const currentTotalCredits = semesterData.reduce(
-				(sum, s) => sum + s.totalCredits,
-				0
+			const currentTotalCredits = semesterData
+				.filter(
+					(s) =>
+						s.status === "completed" ||
+						(s.status === "ongoing" && s.sgpa !== null)
+				)
+				.reduce((sum, s) => sum + s.totalCredits, 0);
+
+			const upcomingSemesters = semesterData.filter(
+				(s) =>
+					s.status === "upcoming" || (s.status === "ongoing" && s.sgpa === null)
 			);
 
-			const totalSemestersCount = semesters.length;
-			const activeIndex = semesterData.findIndex((s) => s.status === "ongoing");
-			const currentSemesterIndex = activeIndex === -1 ? 1 : activeIndex + 1;
-
-			const remainingSemesters = Math.max(
-				0,
-				totalSemestersCount - currentSemesterIndex + 1
-			);
+			const remainingSemestersCount = upcomingSemesters.length;
 
 			const averageCredits =
 				semesterData.length > 0
-					? currentTotalCredits / semesterData.length
+					? semesterData.reduce((sum, s) => sum + s.totalCredits, 0) /
+						semesterData.length
 					: 20;
 
 			const projection = profile?.targetCumulativeCGPA
@@ -99,7 +111,7 @@ export const semesterRouter = o.router({
 						currentCumulativeCGPA,
 						currentTotalCredits,
 						Number(profile.targetCumulativeCGPA),
-						Math.max(1, remainingSemesters),
+						Math.max(0, remainingSemestersCount),
 						averageCredits
 					)
 				: null;
@@ -111,7 +123,7 @@ export const semesterRouter = o.router({
 							...projection,
 							currentCumulativeCGPA,
 							targetCumulativeCGPA: Number(profile?.targetCumulativeCGPA),
-							remainingSemesters,
+							remainingSemesters: remainingSemestersCount,
 						}
 					: null,
 			};

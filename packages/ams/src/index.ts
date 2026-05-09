@@ -116,18 +116,20 @@ export interface SemesterWithCGPA {
 }
 
 export function calculateCumulativeCGPA(semesters: SemesterWithCGPA[]): number {
-	const completedSemesters = semesters.filter((s) => s.cgpa !== null);
+	const completedSemesters = semesters.filter(
+		(s) => s.cgpa !== null && s.cgpa > 0
+	);
 
 	if (completedSemesters.length === 0) {
 		return 0;
 	}
 
-	let totalWeightedCGPA = 0;
+	let totalPoints = 0;
 	let totalCredits = 0;
 
 	for (const semester of completedSemesters) {
-		const cgpa = semester.cgpa ?? 0;
-		totalWeightedCGPA += cgpa * semester.totalCredits;
+		const sgpa = semester.cgpa ?? 0;
+		totalPoints += sgpa * semester.totalCredits;
 		totalCredits += semester.totalCredits;
 	}
 
@@ -135,7 +137,7 @@ export function calculateCumulativeCGPA(semesters: SemesterWithCGPA[]): number {
 		return 0;
 	}
 
-	return Number((totalWeightedCGPA / totalCredits).toFixed(2));
+	return Number((totalPoints / totalCredits).toFixed(2));
 }
 
 export function getMinPercentageForGradePoint(gp: number): number {
@@ -190,40 +192,42 @@ export function calculateRequiredSemesterCGPA(
 	remainingSemesters: number,
 	averageCreditsPerSemester: number
 ): { required: number; achievable: boolean; maxPossibleCGPA: number } {
-	if (currentCumulativeCGPA >= targetCumulativeCGPA) {
-		const targetTotalCredits =
-			currentTotalCredits + remainingSemesters * averageCreditsPerSemester;
-		const maxPossibleWeightedCGPA =
-			currentTotalCredits * currentCumulativeCGPA +
-			remainingSemesters * averageCreditsPerSemester * 10;
-		const maxPossibleCGPA = maxPossibleWeightedCGPA / targetTotalCredits;
+	const totalFutureCredits = remainingSemesters * averageCreditsPerSemester;
+	const totalDegreeCredits = currentTotalCredits + totalFutureCredits;
 
+	if (totalDegreeCredits === 0) {
+		return { required: 0, achievable: true, maxPossibleCGPA: 0 };
+	}
+
+	const totalPointsNeeded = targetCumulativeCGPA * totalDegreeCredits;
+	const currentPointsEarned = currentCumulativeCGPA * currentTotalCredits;
+
+	const pointsRequiredFromFuture = totalPointsNeeded - currentPointsEarned;
+
+	// Calculate maximum possible CGPA (assuming 10.0 in all future credits)
+	const maxPossiblePoints = currentPointsEarned + totalFutureCredits * 10;
+	const maxPossibleCGPA = Number(
+		(maxPossiblePoints / totalDegreeCredits).toFixed(2)
+	);
+
+	if (totalFutureCredits === 0) {
 		return {
 			required: 0,
-			achievable: true,
-			maxPossibleCGPA: Number(maxPossibleCGPA.toFixed(2)),
+			achievable: currentCumulativeCGPA >= targetCumulativeCGPA,
+			maxPossibleCGPA,
 		};
 	}
 
-	const targetTotalCredits =
-		currentTotalCredits + remainingSemesters * averageCreditsPerSemester;
-	const requiredTotalWeightedCGPA = targetCumulativeCGPA * targetTotalCredits;
-	const currentWeightedCGPA = currentCumulativeCGPA * currentTotalCredits;
+	const requiredFutureSGPA = pointsRequiredFromFuture / totalFutureCredits;
 
-	const requiredFutureWeightedCGPA =
-		requiredTotalWeightedCGPA - currentWeightedCGPA;
-	const requiredSemesterCGPA =
-		requiredFutureWeightedCGPA /
-		(remainingSemesters * averageCreditsPerSemester);
-
-	// Calculate maximum possible CGPA assuming straight 10.0s in all remaining credits
-	const maxPossibleWeightedCGPA =
-		currentWeightedCGPA + remainingSemesters * averageCreditsPerSemester * 10;
-	const maxPossibleCGPA = maxPossibleWeightedCGPA / targetTotalCredits;
+	// If required SGPA is negative, it means target is already achieved
+	if (requiredFutureSGPA <= 0) {
+		return { required: 0, achievable: true, maxPossibleCGPA };
+	}
 
 	return {
-		required: Number(requiredSemesterCGPA.toFixed(2)),
-		achievable: requiredSemesterCGPA <= 10,
-		maxPossibleCGPA: Number(maxPossibleCGPA.toFixed(2)),
+		required: Number(Math.min(10, requiredFutureSGPA).toFixed(2)),
+		achievable: requiredFutureSGPA <= 10,
+		maxPossibleCGPA,
 	};
 }
